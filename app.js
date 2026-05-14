@@ -5,6 +5,31 @@
 // OVERVIEW ENHANCEMENTS
 // ==========================================
 
+// ==========================================
+// CONFIRMATION MODAL
+// ==========================================
+window.confirmAction = null;
+
+window.showConfirm = (title, message, onConfirm) => {
+  window.confirmAction = onConfirm;
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMessage').textContent = message;
+  document.getElementById('confirmModal').classList.remove('hidden');
+};
+
+window.closeConfirm = () => {
+  document.getElementById('confirmModal').classList.add('hidden');
+  window.confirmAction = null;
+};
+
+window.executeConfirm = () => {
+  if (typeof window.confirmAction === 'function') {
+    window.confirmAction();
+  }
+  document.getElementById('confirmModal').classList.add('hidden');
+  window.confirmAction = null;
+};
+
 // Time-based greeting
 function updateGreeting() {
   const greeting = document.getElementById('greetingMessage');
@@ -525,61 +550,67 @@ function loadAnalyticsPanel() {
 
 // DELETE FUNCTION
 function deleteGoal(id) {
-  if (!confirm("Delete this goal?")) return;
-
-  fetch("delete_goal.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `id=${id}`,
-    credentials: "same-origin"
-  })
-  .then(res => res.text())
-  .then(data => {
-    if (data.trim() === "success") {
-      loadGoals();
-    } else {
-      alert(data);
+  showConfirm(
+    'Delete this goal?',
+    'This will permanently delete the goal and its progress.',
+    () => {
+      fetch("delete_goal.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `id=${id}`,
+        credentials: "same-origin"
+      })
+      .then(res => res.text())
+      .then(data => {
+        if (data.trim() === "success") {
+          loadGoals();
+        } else {
+          alert(data);
+        }
+      });
     }
-  });
+  );
 }
 
 function deleteTransaction(id) {
+  console.log("Deleting transaction ID:", id);
 
-  if (!confirm("Delete this savings record?"))
-    return;
+  showConfirm(
+    'Delete this savings record?',
+    'This will remove the transaction from your history.',
+    () => {
+      console.log("Confirmed! Sending request for ID:", id);
 
-  fetch("delete_transaction.php", {
+      fetch("delete_transaction.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `id=${id}`,
+        credentials: "same-origin"
+      })
+      .then(res => {
+        console.log("Response status:", res.status);
+        return res.text();
+      })
+      .then(data => {
+        console.log("Server response:", data);
 
-    method: "POST",
-
-    headers: {
-      "Content-Type":
-        "application/x-www-form-urlencoded"
-    },
-
-    body: `id=${id}`,
-
-    credentials: "same-origin"
-
-  })
-  .then(res => res.text())
-  .then(data => {
-
-    if (data.trim() === "success") {
-
-      loadHistory();
-      loadSavings();
-      loadGoals();
-      loadAnalyticsPanel();
-      loadGoalProgress();
-
-    } else {
-
-      alert(data);
-
+        if (data.trim() === "success") {
+          console.log("Delete successful, refreshing...");
+          loadHistory();
+          loadSavings();
+          loadGoals();
+          loadAnalyticsPanel();
+          loadGoalProgress();
+        } else {
+          console.log("Delete failed:", data);
+          alert(data);
+        }
+      })
+      .catch(err => {
+        console.error("Fetch error:", err);
+      });
     }
-
-  });
+  );
 }
 
 function loadGoalProgress() {

@@ -12,7 +12,7 @@
   <aside class="sidebar">
     <h2 class="logo">IponTrack</h2>
 
-    <button onclick="showPanel('home')">Home</button>
+    <button onclick="showPanel('Home')">Home</button>
     <button onclick="showPanel('goals')">Goals</button>
     <button onclick="showPanel('history')">History</button>
     <button onclick="showPanel('analytics')">Savings Analytics</button>
@@ -155,4 +155,18 @@
 
 <script src="app.js"></script>
 </body>
+
+<!-- CONFIRMATION MODAL -->
+<div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-box confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p id="confirmMessage">This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
+      <button class="save-btn" onclick="executeConfirm()" style="background: var(--danger);">Delete</button>
+    </div>
+  </div>
+</div>
+
 </html>
