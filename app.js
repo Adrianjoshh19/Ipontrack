@@ -76,24 +76,55 @@ const savingsTips = [
 let tipIndex = 0;
 let tipInterval;
 
+function buildTipDots() {
+  const dotsContainer = document.getElementById('tipDots');
+  if (!dotsContainer) return;
+  
+  dotsContainer.innerHTML = '';
+  savingsTips.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'tip-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Tip ${i + 1}`);
+    dot.onclick = () => showTip(i);
+    dotsContainer.appendChild(dot);
+  });
+}
+
+function showTip(index) {
+  const tipElement = document.getElementById('savingsTip');
+  if (!tipElement) return;
+  
+  tipIndex = index;
+  
+  // Update dots
+  document.querySelectorAll('.tip-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+  
+  // Fade transition
+  tipElement.style.opacity = '0';
+  setTimeout(() => {
+    tipElement.textContent = savingsTips[index];
+    tipElement.style.opacity = '1';
+  }, 300);
+  
+  // Reset auto-rotation timer
+  clearInterval(tipInterval);
+  tipInterval = setInterval(nextTip, 10000);
+}
+
+function nextTip() {
+  tipIndex = (tipIndex + 1) % savingsTips.length;
+  showTip(tipIndex);
+}
+
 function startTipRotation() {
   const tipElement = document.getElementById('savingsTip');
   if (!tipElement) return;
   
-  // Show first tip immediately
+  buildTipDots();
   tipElement.textContent = savingsTips[0];
-  
-  // Rotate every 5 seconds
-  tipInterval = setInterval(() => {
-    tipIndex = (tipIndex + 1) % savingsTips.length;
-    
-    // Fade out, change text, fade in
-    tipElement.style.opacity = '0';
-    setTimeout(() => {
-      tipElement.textContent = savingsTips[tipIndex];
-      tipElement.style.opacity = '1';
-    }, 400);
-  }, 5000);
+  tipInterval = setInterval(nextTip, 10000);
 }
 
 window.toggleDarkMode = () => {
@@ -648,6 +679,13 @@ function loadGoalProgress() {
 }
 
 window.showPanel = (panel) => {
+  // Close mobile sidebar if open
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sidebar && overlay && sidebar.classList.contains('open')) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  }
 
   document
     .querySelectorAll(".panel")
@@ -658,12 +696,18 @@ window.showPanel = (panel) => {
     .classList.remove("hidden");
 
   if (panel === "analytics") {
-
     loadAnalyticsPanel();
     loadGoalProgress();
+  }
 
+  // Refresh Home when switching back
+  if (panel === "home") {
+    updateGreeting();
+    loadSavings();
+    startTipRotation();
   }
 };
+
 
 function logout() {
   window.location.href = "index.html";

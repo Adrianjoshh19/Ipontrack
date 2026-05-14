@@ -138,12 +138,12 @@ body::before {
 .main {
   flex: 1;
   margin-left: var(--sidebar-width);
-  padding: 50px;
+  padding: 40px 48px;
 }
 
 /* PANELS */
 .panel {
-  max-width: 1000px;
+  max-width: 100%;
   animation: fadeUp 0.45s ease;
 }
 
@@ -676,42 +676,110 @@ body.dark .hamburger {
 }
 
 /* ============================================= */
-/* OVERVIEW ENHANCEMENTS */
+/* HOME PANEL ENHANCEMENTS */
 /* ============================================= */
 
-/* Greeting */
+/* Home cards layout */
+#home {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 100%;
+}
+
+/* Greeting Card */
+.greeting-card {
+  padding: 40px 48px !important;
+  max-width: 100% !important;
+}
+
 .greeting {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-soft);
-  margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0 0 8px 0;
   animation: fadeUp 0.6s ease;
 }
 
-/* Savings Tip */
-.savings-tip {
-  margin-top: 28px;
-  padding: 16px 20px;
-  background: rgba(160, 200, 120, 0.08);
-  border-radius: 16px;
-  border: 1px solid rgba(160, 200, 120, 0.12);
+.greeting-sub {
+  font-size: 1rem;
+  color: var(--text-soft);
+  margin: 0;
+}
+
+/* Savings Card */
+.savings-card {
+  padding: 48px 52px !important;
+  max-width: 100% !important;
+}
+
+.savings-card h1 {
+  font-size: clamp(48px, 8vw, 80px) !important;
+}
+
+/* Tips Card */
+.tips-card {
+  padding: 32px 40px !important;
+  max-width: 100% !important;
+}
+
+.tip-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  animation: fadeUp 0.5s ease;
-  transition: opacity 0.4s ease;
+  margin-bottom: 16px;
 }
 
 .tip-icon {
-  font-size: 1.3rem;
-  flex-shrink: 0;
+  font-size: 1.6rem;
 }
 
-.savings-tip p {
-  margin: 0;
-  font-size: 0.9rem;
+.tip-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   color: var(--text-soft);
-  line-height: 1.5;
+}
+
+#savingsTip {
+  font-size: 1.2rem;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin: 0;
+  min-height: 2.5em;
+  transition: opacity 0.4s ease;
+  font-weight: 500;
+}
+
+/* Subtle dots */
+.tip-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.tip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d4d4d4;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+body.dark .tip-dot {
+  background: #555;
+}
+
+.tip-dot.active {
+  background: var(--primary);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
 }
 
 /* Counter animation */
@@ -724,8 +792,4 @@ body.dark .hamburger {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.counter-animate {
-  animation: countUp 0.8s ease-out;
 }

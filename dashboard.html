@@ -12,7 +12,7 @@
   <aside class="sidebar">
     <h2 class="logo">IponTrack</h2>
 
-    <button onclick="showPanel('overview')">HOME</button>
+    <button onclick="showPanel('home')">Home</button>
     <button onclick="showPanel('goals')">Goals</button>
     <button onclick="showPanel('history')">History</button>
     <button onclick="showPanel('analytics')">Savings Analytics</button>
@@ -24,27 +24,34 @@
 
   <main class="main">
 
-    <!-- OVERVIEW -->
-<section id="HOME" class="panel">
-  <div class="overview-card">
-
+    <!-- HOME -->
+<section id="Home" class="panel">
+  
+  <!-- Greeting Card -->
+  <div class="overview-card greeting-card">
     <p id="greetingMessage" class="greeting">Hello!</p>
+    <p class="greeting-sub">Let's grow your savings today </p>
+  </div>
 
+  <!-- Savings Card -->
+  <div class="overview-card savings-card">
     <p class="label">Total Savings</p>
-
     <h1 id="totalSavings">₱0</h1>
-
     <button onclick="openDeposit()" class="primary-btn">
       + Add Savings
     </button>
-
-    <!-- Savings Tip -->
-    <div class="savings-tip">
-      <span class="tip-icon">💡</span>
-      <p id="savingsTip">Loading tip...</p>
-    </div>
-
   </div>
+
+  <!-- Tips Card -->
+  <div class="overview-card tips-card">
+    <div class="tip-header">
+      <span class="tip-icon">💡</span>
+      <span class="tip-label">Savings Tips</span>
+    </div>
+    <p id="savingsTip">Loading tip...</p>
+    <div class="tip-dots" id="tipDots"></div>
+  </div>
+
 </section>
 
     <!-- GOALS -->
