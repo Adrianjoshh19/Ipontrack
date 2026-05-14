@@ -1,6 +1,101 @@
 // ==========================================
 // DARK MODE TOGGLE
 // ==========================================
+// ==========================================
+// OVERVIEW ENHANCEMENTS
+// ==========================================
+
+// Time-based greeting
+function updateGreeting() {
+  const greeting = document.getElementById('greetingMessage');
+  if (!greeting) return;
+  
+  const hour = new Date().getHours();
+  let message;
+  
+  if (hour < 12) {
+    message = 'Good morning! ☀️';
+  } else if (hour < 17) {
+    message = 'Good afternoon! 🌤️';
+  } else {
+    message = 'Good evening! 🌙';
+  }
+  
+  greeting.textContent = message;
+}
+
+// Animated counter
+function animateCounter(element, target) {
+  const startValue = 0;
+  const duration = 1200; // 1.2 seconds
+  const startTime = performance.now();
+  
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(startValue + (target - startValue) * eased);
+    
+    element.textContent = '₱' + current.toLocaleString();
+    
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      element.textContent = '₱' + target.toLocaleString();
+    }
+  }
+  
+  requestAnimationFrame(update);
+}
+
+// Rotating savings tips
+const savingsTips = [
+  'Pay yourself first — save before you spend.',
+  'Track every peso. Small leaks sink big ships.',
+  'Set specific goals. "New laptop" beats "save more".',
+  'The 50-30-20 rule: 50% needs, 30% wants, 20% savings.',
+  'Automate your savings. Set it and forget it.',
+  'Wait 24 hours before big purchases. Impulse kills budgets.',
+  'Save your bonuses and windfalls, future you will thank you.',
+  'Comparison is the thief of joy. Focus on your own goals.',
+  'A little saved daily becomes a lot saved monthly.',
+  '"A penny saved is a penny earned." — Benjamin Franklin"',
+  'Start small. Even ₱100 a week adds up to over ₱5,000 a year.',
+  '"Beware of little expenses; a small leak will sink a great ship." — Benjamin Franklin',
+  '"The quickest way to double your money is to fold it in half and put it in your back pocket." — Will Rogers',
+  'Emergency fund first — aim for 3-6 months of expenses.',
+  '"Budgeting is telling your money where to go instead of wondering where it went." — Dave Ramsey'
+
+
+
+
+];
+
+let tipIndex = 0;
+let tipInterval;
+
+function startTipRotation() {
+  const tipElement = document.getElementById('savingsTip');
+  if (!tipElement) return;
+  
+  // Show first tip immediately
+  tipElement.textContent = savingsTips[0];
+  
+  // Rotate every 5 seconds
+  tipInterval = setInterval(() => {
+    tipIndex = (tipIndex + 1) % savingsTips.length;
+    
+    // Fade out, change text, fade in
+    tipElement.style.opacity = '0';
+    setTimeout(() => {
+      tipElement.textContent = savingsTips[tipIndex];
+      tipElement.style.opacity = '1';
+    }, 400);
+  }, 5000);
+}
+
 window.toggleDarkMode = () => {
   const body = document.body;
   const isDark = body.classList.toggle('dark');
@@ -260,7 +355,9 @@ function loadSavings() {
   fetch("get_total.php", { credentials: "same-origin" })
     .then(res => res.json())
     .then(data => {
-      document.getElementById("totalSavings").textContent = "₱" + data.total;
+      const totalElement = document.getElementById("totalSavings");
+      const target = parseFloat(data.total) || 0;
+      animateCounter(totalElement, target);
     });
 }
 
@@ -587,10 +684,12 @@ window.goRegister = () => window.location.href = "register.html";
 window.goLogin = () => window.location.href = "index.html";
 
 window.onload = () => {
+  updateGreeting();
   loadSavings();
   loadGoals();
   loadHistory();
   loadAnalytics();
   loadAnalyticsPanel();
   loadGoalProgress();
+  startTipRotation();
 };

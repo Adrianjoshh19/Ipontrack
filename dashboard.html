@@ -12,7 +12,7 @@
   <aside class="sidebar">
     <h2 class="logo">IponTrack</h2>
 
-    <button onclick="showPanel('overview')">Overview</button>
+    <button onclick="showPanel('overview')">HOME</button>
     <button onclick="showPanel('goals')">Goals</button>
     <button onclick="showPanel('history')">History</button>
     <button onclick="showPanel('analytics')">Savings Analytics</button>
@@ -25,19 +25,27 @@
   <main class="main">
 
     <!-- OVERVIEW -->
-    <section id="overview" class="panel">
-      <div class="overview-card">
+<section id="HOME" class="panel">
+  <div class="overview-card">
 
-        <p class="label">Total Savings</p>
+    <p id="greetingMessage" class="greeting">Hello!</p>
 
-        <h1 id="totalSavings">₱0</h1>
+    <p class="label">Total Savings</p>
 
-        <button onclick="openDeposit()" class="primary-btn">
-          + Add Savings
-        </button>
+    <h1 id="totalSavings">₱0</h1>
 
-      </div>
-    </section>
+    <button onclick="openDeposit()" class="primary-btn">
+      + Add Savings
+    </button>
+
+    <!-- Savings Tip -->
+    <div class="savings-tip">
+      <span class="tip-icon">💡</span>
+      <p id="savingsTip">Loading tip...</p>
+    </div>
+
+  </div>
+</section>
 
     <!-- GOALS -->
     <section id="goals" class="panel hidden">

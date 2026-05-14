@@ -674,3 +674,58 @@ body.dark .hamburger {
   background: rgba(20, 20, 20, 0.9);
   color: #e0e0e0;
 }
+
+/* ============================================= */
+/* OVERVIEW ENHANCEMENTS */
+/* ============================================= */
+
+/* Greeting */
+.greeting {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  margin-bottom: 20px;
+  animation: fadeUp 0.6s ease;
+}
+
+/* Savings Tip */
+.savings-tip {
+  margin-top: 28px;
+  padding: 16px 20px;
+  background: rgba(160, 200, 120, 0.08);
+  border-radius: 16px;
+  border: 1px solid rgba(160, 200, 120, 0.12);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  animation: fadeUp 0.5s ease;
+  transition: opacity 0.4s ease;
+}
+
+.tip-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.savings-tip p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+/* Counter animation */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.counter-animate {
+  animation: countUp 0.8s ease-out;
+}
