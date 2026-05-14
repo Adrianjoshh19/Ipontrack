@@ -1,3 +1,31 @@
+// ==========================================
+// DARK MODE TOGGLE
+// ==========================================
+window.toggleDarkMode = () => {
+  const body = document.body;
+  const isDark = body.classList.toggle('dark');
+  localStorage.setItem('ipontrack-theme', isDark ? 'dark' : 'light');
+  updateDarkModeButton();
+};
+
+function updateDarkModeButton() {
+  const toggle = document.getElementById('darkModeToggle');
+  if (!toggle) return;
+  if (document.body.classList.contains('dark')) {
+    toggle.textContent = '☀️ Light Mode';
+  } else {
+    toggle.textContent = '🌙 Dark Mode';
+  }
+}
+
+// Apply saved theme on page load
+(function () {
+  if (localStorage.getItem('ipontrack-theme') === 'dark') {
+    document.body.classList.add('dark');
+  }
+  updateDarkModeButton();
+})();
+
 window.login = () => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
