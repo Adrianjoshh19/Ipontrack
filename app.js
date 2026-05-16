@@ -1128,6 +1128,45 @@ window.closeDeposit = () => {
   document.getElementById("depositModal").classList.add("hidden");
 };
 
+// General Deposit Modal
+window.openGeneralDeposit = () => {
+  document.getElementById("generalDepositModal").classList.remove("hidden");
+};
+
+window.closeGeneralDeposit = () => {
+  document.getElementById("generalDepositModal").classList.add("hidden");
+};
+
+window.generalDeposit = () => {
+  const amount = document.getElementById("generalAmount").value;
+
+  if (!amount) {
+    alert("Enter amount");
+    return;
+  }
+
+  fetch("deposit_general.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `amount=${encodeURIComponent(amount)}`,
+    credentials: "same-origin"
+  })
+  .then(res => res.text())
+  .then(data => {
+    if (data.trim() === "success") {
+      alert("Savings added!");
+      closeGeneralDeposit();
+      document.getElementById("generalAmount").value = "";
+      loadSavings();
+      loadTotalTransactions();
+      loadRemainingBalance();
+    } else {
+      alert(data);
+    }
+  })
+  .catch(err => console.error("General deposit error:", err));
+};
+
 // navigation
 window.goRegister = () => window.location.href = "register.html";
 window.goLogin = () => window.location.href = "index.html";
