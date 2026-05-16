@@ -204,6 +204,11 @@ window.deposit = () => {
   const amount =
     document.getElementById("amount").value;
 
+    const goalId =
+  document.getElementById(
+    "depositGoalId"
+  ).value;
+
   if (!amount) {
 
     alert("Enter amount");
@@ -221,7 +226,9 @@ window.deposit = () => {
         "application/x-www-form-urlencoded"
     },
 
-    body: `amount=${encodeURIComponent(amount)}`,
+    body:
+  `amount=${encodeURIComponent(amount)}
+   &goal_id=${encodeURIComponent(goalId)}`,
 
     credentials: "same-origin"
 
@@ -236,6 +243,7 @@ window.deposit = () => {
       alert("Saved!");
 
       closeDeposit();
+      loadTotalTransactions();
 
       /* =========================
          REFRESH ALL UI
@@ -292,7 +300,8 @@ window.addGoal = () => {
 
     if (data.trim() === "success") {
       alert("Goal added!");
-      loadGoals(); // refresh UI
+      loadGoals();
+      loadActiveGoals(); // Refresh
     } else {
       alert(data);
     }
@@ -362,48 +371,210 @@ function loadHistory() {
 }
 
 function loadGoals() {
-  fetch("get_goals.php", { credentials: "same-origin" })
+
+  fetch("get_goals.php", {
+    credentials: "same-origin"
+  })
+
     .then(res => res.json())
+
     .then(data => {
+
       let html = "";
 
       data.forEach(g => {
-        const percent = ((g.current_amount / g.target_amount) * 100).toFixed(1);
+
+        const percent =
+          (
+            (g.current_amount /
+              g.target_amount) * 100
+          ).toFixed(1);
 
         html += `
-          <div class="goal-card">
-            <h3>${g.goal_name}</h3>
-            <p>₱${g.current_amount} / ₱${g.target_amount}</p>
 
-            <!-- progress -->
+          <div class="goal-card">
+
+            <div class="goal-top">
+
+  <h3>
+    ${g.goal_name}
+  </h3>
+
+  <div class="goal-actions">
+
+    <button
+    type="button"
+      class="goal-add-btn"
+      onclick="
+        openDeposit(${g.id})
+      "
+    >
+      ADD SAVINGS
+    </button>
+
+    <button
+    type="button"
+      class="goal-delete-btn"
+      onclick="
+        deleteGoal(${g.id})
+      "
+    >
+      DELETE GOAL
+    </button>
+
+  </div>
+
+</div>
+
+            <p>
+              ₱${g.current_amount}
+              /
+              ₱${g.target_amount}
+            </p>
+
+            <!-- PROGRESS -->
+
             <div class="progress-bar">
-              <div class="progress-fill" style="width:${percent}%"></div>
+
+              <div
+                class="progress-fill"
+                style="width:${percent}%"
+              >
+              </div>
+
             </div>
 
-            <!-- 🔥 analytics per goal -->
+            <!-- PREDICTION GUIDE -->
+
+            <select
+              class="prediction-select"
+
+              onchange="
+                updatePrediction(
+                  this,
+                  ${g.target_amount},
+                  ${g.current_amount},
+                  ${g.id}
+                )
+              "
+            >
+
+              <option value="1">
+                1 Week
+              </option>
+
+              <option value="2">
+                2 Weeks
+              </option>
+
+              <option value="3">
+                3 Weeks
+              </option>
+
+              <option value="4">
+                4 Weeks
+              </option>
+
+              <option value="1m">
+                1 Month
+              </option>
+
+              <option value="2m">
+                2 Months
+              </option>
+
+              <option value="3m">
+                3 Months
+              </option>
+
+              <option value="6m">
+                6 Months
+              </option>
+
+              <option value="12m">
+                12 Months
+              </option>
+
+            </select>
+
+            <!-- ANALYTICS -->
+
             <div class="goal-analytics">
+
               <div class="mini-card">
-                <small>Daily</small>
-                <strong id="daily-${g.id}">₱0</strong>
+
+                <small>
+                  Daily
+                </small>
+
+                <strong
+                  id="daily-${g.id}"
+                >
+                  ₱0
+                </strong>
+
               </div>
+
               <div class="mini-card">
-                <small>Weekly</small>
-                <strong id="weekly-${g.id}">₱0</strong>
+
+                <small>
+                  Weekly
+                </small>
+
+                <strong
+                  id="weekly-${g.id}"
+                >
+                  ₱0
+                </strong>
+
               </div>
+
               <div class="mini-card">
-                <small>Monthly</small>
-                <strong id="monthly-${g.id}">₱0</strong>
+
+                <small>
+                  Monthly
+                </small>
+
+                <strong
+                  id="monthly-${g.id}"
+                >
+                  ₱0
+                </strong>
+
               </div>
+
             </div>
 
           </div>
+
         `;
       });
 
-      document.getElementById("goalList").innerHTML = html;
+      document.getElementById(
+        "goalList"
+      ).innerHTML = html;
 
-      // 🔥 after rendering → load analytics per goal
       loadGoalAnalytics();
+
+      /* AUTO LOAD PREDICTION */
+
+      setTimeout(() => {
+
+        document
+          .querySelectorAll(
+            ".prediction-select"
+          )
+
+          .forEach(select => {
+
+            select.dispatchEvent(
+              new Event("change")
+            );
+
+          });
+
+      }, 100);
+
     });
 }
 
@@ -512,6 +683,69 @@ function loadGoalAnalytics() {
   });
 }
 
+function updatePrediction(
+  select,
+  target,
+  current,
+  goalId
+) {
+
+  let remaining =
+    target - current;
+
+  if (remaining < 0) {
+
+    remaining = 0;
+  }
+
+  let weeks = 1;
+  let months = 1;
+
+  const value = select.value;
+
+  if (value.includes("m")) {
+
+    months =
+      parseInt(value);
+
+    weeks =
+      months * 4;
+
+  } else {
+
+    weeks =
+      parseInt(value);
+
+    months =
+      weeks / 4;
+  }
+
+  const daily =
+    remaining / (weeks * 7);
+
+  const weekly =
+    remaining / weeks;
+
+  const monthly =
+    remaining / months;
+
+  document.getElementById(
+    `daily-${goalId}`
+  ).textContent =
+    "₱" + daily.toFixed(2);
+
+  document.getElementById(
+    `weekly-${goalId}`
+  ).textContent =
+    "₱" + weekly.toFixed(2);
+
+  document.getElementById(
+    `monthly-${goalId}`
+  ).textContent =
+    "₱" + monthly.toFixed(2);
+}
+
+
 function loadAnalyticsPanel() {
   fetch("get_goal_analytics.php", { credentials: "same-origin" })
     .then(res => res.json())
@@ -550,25 +784,59 @@ function loadAnalyticsPanel() {
 
 // DELETE FUNCTION
 function deleteGoal(id) {
+
   showConfirm(
-    'Delete this goal?',
-    'This will permanently delete the goal and its progress.',
+
+    "Delete Goal",
+
+    "Delete this goal permanently?",
+
     () => {
+
       fetch("delete_goal.php", {
+
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `id=${id}`,
+
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded"
+        },
+
+        body:
+          `goal_id=${encodeURIComponent(id)}`,
+
         credentials: "same-origin"
+
       })
+
       .then(res => res.text())
+
       .then(data => {
-        if (data.trim() === "success") {
-          loadGoals();
-        } else {
-          alert(data);
-        }
+
+        console.log(
+          "DELETE GOAL:",
+          data
+        );
+
+        loadGoals();
+
+        loadGoalProgress();
+
+        loadActiveGoals();
+
+      })
+
+      .catch(err => {
+
+        console.error(
+          "DELETE GOAL ERROR:",
+          err
+        );
+
       });
+
     }
+
   );
 }
 
@@ -613,6 +881,83 @@ function deleteTransaction(id) {
   );
 }
 
+/* =========================
+   REAL TIME CLOCK
+========================= */
+
+function startClock() {
+
+  function updateClock() {
+
+    const now = new Date();
+
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ];
+
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ];
+
+    const day =
+      days[now.getDay()];
+
+    let hours =
+      now.getHours();
+
+    const minutes =
+      String(
+        now.getMinutes()
+      ).padStart(2, "0");
+
+    const ampm =
+      hours >= 12 ? "PM" : "AM";
+
+    hours =
+      hours % 12 || 12;
+
+    const date =
+      `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+    document.getElementById(
+      "clockDay"
+    ).textContent = day;
+
+    document.getElementById(
+      "clockTime"
+    ).textContent =
+      `${hours}:${minutes} ${ampm}`;
+
+    document.getElementById(
+      "clockDate"
+    ).textContent = date;
+  }
+
+  updateClock();
+
+  setInterval(
+    updateClock,
+    1000
+  );
+}
+
 function loadGoalProgress() {
 
   fetch("get_goal_progress.php", {
@@ -629,7 +974,7 @@ function loadGoalProgress() {
 
       html += `
         <div style="
-          background:rgba(255,255,255,0.7);
+          background:var(--card-bg);
           backdrop-filter:blur(15px);
           padding:24px;
           border-radius:24px;
@@ -641,7 +986,7 @@ function loadGoalProgress() {
           <h3 style="
             margin-top:0;
             font-size:28px;
-            color:#425133;
+            color:var(--text-dark);
           ">
             ${g.goal_name}
           </h3>
@@ -649,13 +994,13 @@ function loadGoalProgress() {
           <p style="
             font-size:20px;
             font-weight:600;
-            color:#4f5f3c;
+            color:var(--text-dark);
           ">
             ₱${g.current_amount} / ₱${g.target_amount}
           </p>
 
           <p style="
-            color:#7c8d5b;
+            color:var(--text-soft);
             font-size:18px;
           ">
             Remaining: ₱${g.remaining}
@@ -664,7 +1009,7 @@ function loadGoalProgress() {
           <div style="
             width:100%;
             height:14px;
-            background:#edf3d0;
+            background:rgba(255,255,255,0.08);
             border-radius:14px;
             overflow:hidden;
             margin-top:18px;
@@ -679,7 +1024,6 @@ function loadGoalProgress() {
                 #DDEB9D
               );
               border-radius:14px;
-              transition:0.5s ease;
             ">
             </div>
 
@@ -688,7 +1032,7 @@ function loadGoalProgress() {
           <small style="
             display:block;
             margin-top:10px;
-            color:#6e8452;
+            color:var(--text-soft);
             font-weight:600;
             font-size:15px;
           ">
@@ -704,9 +1048,132 @@ function loadGoalProgress() {
   })
   .catch(error => {
 
-    console.error("GOAL PROGRESS ERROR:", error);
+    console.error(
+      "GOAL PROGRESS ERROR:",
+      error
+    );
 
   });
+}
+
+/* =========================
+   ACTIVE GOALS COUNT
+========================= */
+
+function loadActiveGoals() {
+
+  fetch("get_goals.php", {
+    credentials: "same-origin"
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    document.getElementById(
+      "activeGoals"
+    ).textContent = data.length;
+
+  })
+  .catch(error => {
+
+    console.error(
+      "ACTIVE GOALS ERROR:",
+      error
+    );
+
+  });
+}
+
+/* =========================
+   TOTAL TRANSACTIONS COUNT
+========================= */
+
+function loadTotalTransactions() {
+
+  fetch("get_transactions.php", {
+    credentials: "same-origin"
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    document.getElementById(
+      "totalTransactions"
+    ).textContent = data.length;
+
+  })
+  .catch(error => {
+
+    console.error(
+      "TOTAL TRANSACTIONS ERROR:",
+      error
+    );
+
+  });
+}
+
+/* =========================
+   ROTATING SAVINGS TIPS
+========================= */
+
+function startSavingsTips() {
+
+  const tips = [
+
+    "Emergency fund first — aim for 3-6 months of expenses.",
+
+    "Track every peso. Small leaks sink big ships.",
+
+    "Save before spending, not after.",
+
+    "Consistency beats large one-time savings.",
+
+    "Avoid impulse buying — wait 24 hours first.",
+
+    "Set realistic weekly savings goals.",
+
+    "Financial freedom starts with discipline.",
+
+    "A small daily save becomes huge yearly growth."
+
+  ];
+
+  let current = 0;
+
+  const tipText =
+    document.getElementById("tipsText");
+
+  setInterval(() => {
+
+    tipText.classList.remove(
+      "tip-slide-in"
+    );
+
+    tipText.classList.add(
+      "tip-slide-out"
+    );
+
+    setTimeout(() => {
+
+      current++;
+
+      if (current >= tips.length) {
+
+        current = 0;
+      }
+
+      tipText.textContent =
+        tips[current];
+
+      tipText.classList.remove(
+        "tip-slide-out"
+      );
+
+      tipText.classList.add(
+        "tip-slide-in"
+      );
+
+    }, 400);
+
+  }, 15000);
 }
 
 window.showPanel = (panel) => {
@@ -746,8 +1213,15 @@ function logout() {
 
 
 // MODAL FIX
-window.openDeposit = () => {
-  document.getElementById("depositModal").classList.remove("hidden");
+window.openDeposit = (goalId) => {
+
+  document
+    .getElementById("depositModal")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("depositGoalId")
+    .value = goalId;
 };
 
 window.closeDeposit = () => {
@@ -767,4 +1241,8 @@ window.onload = () => {
   loadAnalyticsPanel();
   loadGoalProgress();
   startTipRotation();
+  startClock();
+  loadActiveGoals();
+  loadTotalTransactions();
+  startSavingsTips();
 };

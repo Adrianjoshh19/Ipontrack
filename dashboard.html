@@ -10,7 +10,17 @@
 <div class="layout">
 
   <aside class="sidebar">
-    <h2 class="logo">IponTrack</h2>
+    <div class="sidebar-brand">
+
+  <img
+    src="images/ipontrack-logo.jpg"
+    alt="IponTrack Logo"
+    class="sidebar-logo"
+  >
+
+  <h2 class="logo">IponTrack</h2>
+
+</div>
 
     <button onclick="showPanel('Home')">Home</button>
     <button onclick="showPanel('goals')">Goals</button>
@@ -33,24 +43,112 @@
     <p class="greeting-sub">Let's grow your savings today </p>
   </div>
 
-  <!-- Savings Card -->
-  <div class="overview-card savings-card">
+  <div class="overview-row">
+
+  <div class="overview-card">
+
     <p class="label">Total Savings</p>
+
     <h1 id="totalSavings">₱0</h1>
-    <button onclick="openDeposit()" class="primary-btn">
-      + Add Savings
-    </button>
+
+    
+
   </div>
 
-  <!-- Tips Card -->
-  <div class="overview-card tips-card">
-    <div class="tip-header">
-      <span class="tip-icon">💡</span>
-      <span class="tip-label">Savings Tips</span>
-    </div>
-    <p id="savingsTip">Loading tip...</p>
-    <div class="tip-dots" id="tipDots"></div>
+  <div class="clock-card">
+
+    <p class="clock-day" id="clockDay">
+      Loading...
+    </p>
+
+    <h2 class="clock-time" id="clockTime">
+      --:--
+    </h2>
+
+    <small class="clock-date" id="clockDate">
+      Loading date...
+    </small>
+
   </div>
+
+  <div class="goals-card">
+
+  <p class="goals-label">
+    ACTIVE GOALS
+  </p>
+
+  <h2
+    class="goals-count"
+    id="activeGoals"
+  >
+    0
+  </h2>
+
+  <small class="goals-subtext">
+    Goals currently tracked
+  </small>
+
+</div>
+
+<div class="transactions-card">
+
+  <p class="transactions-label">
+    TOTAL TRANSACTIONS
+  </p>
+
+  <h2
+    class="transactions-total"
+    id="totalTransactions"
+  >
+    ₱0
+  </h2>
+
+  <small class="transactions-subtext">
+    Transactions recorded
+  </small>
+
+</div>
+
+</div>
+
+  <div class="tips-card">
+
+  <div class="tips-header">
+
+    <div class="tips-icon">
+      💡
+    </div>
+
+    <div>
+
+      <p class="tips-label">
+        SAVINGS TIP
+      </p>
+
+      <h3 class="tips-title">
+        Smart Money Habit
+      </h3>
+
+    </div>
+
+  </div>
+
+  <p
+    class="tips-text"
+    id="tipsText"
+  >
+    Emergency fund first — aim for 3-6 months of expenses.
+  </p>
+
+  <div class="tips-footer">
+
+    <span class="tips-badge">
+      Financial Discipline
+    </span>
+
+  </div>
+
+</div>
 
 </section>
 
@@ -123,28 +221,81 @@
 
   <div class="modal-box">
 
-    <h3>Add Savings</h3>
+  <h3>
+    Add Savings
+  </h3>
 
-    <input
-      id="amount"
-      type="number"
-      placeholder="Enter amount"
+  <input
+    id="amount"
+    type="number"
+    placeholder="Enter amount"
+  >
+
+  <!-- GOAL ID -->
+
+  <input
+    type="hidden"
+    id="depositGoalId"
+  >
+
+  <div class="modal-actions">
+
+    <button
+      class="cancel-btn"
+      onclick="closeDeposit()"
     >
+      Cancel
+    </button>
+
+    <button
+      class="save-btn"
+      onclick="deposit()"
+    >
+      Save Savings
+    </button>
+
+  </div>
+
+</div>
+
+<!-- CONFIRMATION MODAL -->
+
+<div
+  id="confirmModal"
+  class="modal hidden"
+  role="dialog"
+  aria-modal="true"
+>
+
+  <div class="modal-box confirm-box">
+
+    <div class="confirm-icon">
+      ⚠️
+    </div>
+
+    <h3 id="confirmTitle">
+      Are you sure?
+    </h3>
+
+    <p id="confirmMessage">
+      This action cannot be undone.
+    </p>
 
     <div class="modal-actions">
 
       <button
         class="cancel-btn"
-        onclick="closeDeposit()"
+        onclick="closeConfirm()"
       >
         Cancel
       </button>
 
       <button
         class="save-btn"
-        onclick="deposit()"
+        onclick="executeConfirm()"
+        style="background: var(--danger);"
       >
-        Save Savings
+        Delete
       </button>
 
     </div>
@@ -154,19 +305,6 @@
 </div>
 
 <script src="app.js"></script>
+
 </body>
-
-<!-- CONFIRMATION MODAL -->
-<div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true">
-  <div class="modal-box confirm-box">
-    <div class="confirm-icon">⚠️</div>
-    <h3 id="confirmTitle">Are you sure?</h3>
-    <p id="confirmMessage">This action cannot be undone.</p>
-    <div class="modal-actions">
-      <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
-      <button class="save-btn" onclick="executeConfirm()" style="background: var(--danger);">Delete</button>
-    </div>
-  </div>
-</div>
-
 </html>

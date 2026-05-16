@@ -5,88 +5,35 @@ include "config.php";
 if (!isset($_SESSION['user_id'])) {
 
   echo "not_logged_in";
-  exit;
 
+  exit;
 }
 
 $user_id = $_SESSION['user_id'];
 
-if (!isset($_POST['amount'])) {
+$amount = $_POST['amount'];
 
-  echo "no_amount";
-  exit;
+$goal_id = $_POST['goal_id'];
 
-}
+/* UPDATE GOAL */
 
-$amount = floatval($_POST['amount']);
-
-/* =========================
-   CHECK USER GOAL
-========================= */
-
-$stmt = $conn->prepare("
-SELECT id
-FROM goals
-WHERE user_id = ?
-LIMIT 1
+$conn->query("
+  UPDATE goals
+  SET current_amount =
+      current_amount + $amount
+  WHERE id = $goal_id
 ");
 
-$stmt->bind_param("i", $user_id);
+/* INSERT TRANSACTION */
 
-$stmt->execute();
+$conn->query("
+  INSERT INTO transactions
+  (goal_id, user_id, amount)
 
-$result = $stmt->get_result();
+  VALUES
 
-if ($result->num_rows == 0) {
-
-  echo "no_goal";
-  exit;
-
-}
-
-$goal = $result->fetch_assoc();
-
-$goal_id = $goal['id'];
-
-/* =========================
-   UPDATE GOAL SAVINGS
-========================= */
-
-$update = $conn->prepare("
-UPDATE goals
-SET current_amount = current_amount + ?
-WHERE id = ?
+  ($goal_id, $user_id, $amount)
 ");
-
-$update->bind_param(
-  "di",
-  $amount,
-  $goal_id
-);
-
-$update->execute();
-
-/* =========================
-   INSERT TRANSACTION
-========================= */
-
-$insert = $conn->prepare("
-INSERT INTO transactions (
-  goal_id,
-  amount,
-  user_id
-)
-VALUES (?, ?, ?)
-");
-
-$insert->bind_param(
-  "idi",
-  $goal_id,
-  $amount,
-  $user_id
-);
-
-$insert->execute();
 
 echo "success";
 
