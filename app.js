@@ -20,6 +20,14 @@ window.showConfirm = (title, message, onConfirm) => {
 window.closeConfirm = () => {
   document.getElementById('confirmModal').classList.add('hidden');
   window.confirmAction = null;
+  // Reset modal buttons to default
+  const actions = document.querySelector('#confirmModal .modal-actions');
+  if (actions) {
+    actions.innerHTML = `
+      <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
+      <button class="save-btn" onclick="executeConfirm()" style="background: var(--danger);">Delete</button>
+    `;
+  }
 };
 
 window.executeConfirm = () => {
@@ -515,17 +523,27 @@ function loadAnalyticsPanel() {
 
 // DELETE FUNCTION
 function deleteGoal(id) {
-  // First, check if the goal is completed by fetching its data
   fetch("get_goals.php", { credentials: "same-origin" })
     .then(res => res.json())
     .then(goals => {
       const goal = goals.find(g => g.id == id);
       
-      if (goal && goal.current_amount >= goal.target_amount) {
-        // Goal is completed — ask why they're deleting
-        showCompleteDeleteConfirm(id);
+      if (!goal) return;
+      
+      const isCompleted = parseFloat(goal.current_amount) >= parseFloat(goal.target_amount);
+      
+      if (isCompleted) {
+        // Completed goal
+        document.getElementById('confirmTitle').textContent = 'Delete Completed Goal';
+        document.getElementById('confirmMessage').textContent = 'Why are you deleting this completed goal?';
+        document.getElementById('confirmModal').classList.remove('hidden');
+        document.querySelector('#confirmModal .modal-actions').innerHTML = `
+          <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
+          <button class="save-btn" onclick="executeGoalDelete(${id}, 'spent')" style="background: var(--danger);">I Spent It</button>
+          <button class="save-btn" onclick="executeGoalDelete(${id}, 'refund')">Refund Me</button>
+        `;
       } else {
-        // Goal incomplete — normal delete with refund
+        // Incomplete goal
         showConfirm(
           "Delete Goal",
           "Delete this goal? The allocated amount will be refunded to Remaining Savings.",
