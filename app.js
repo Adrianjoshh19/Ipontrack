@@ -125,78 +125,44 @@ window.login = () => {
 };
 
 window.deposit = () => {
-
-  const amount =
-    document.getElementById("amount").value;
-
-  const goalId =
-    document.getElementById(
-      "depositGoalId"
-    ).value;
+  const amount = document.getElementById("amount").value;
+  const goalId = document.getElementById("depositGoalId").value;
 
   if (!amount) {
-
     alert("Enter amount");
-
     return;
-
   }
 
-  fetch("deposit.php", {
-
+  fetch("allocate.php", {
     method: "POST",
-
-    headers: {
-      "Content-Type":
-        "application/x-www-form-urlencoded"
-    },
-
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `amount=${encodeURIComponent(amount)}&goal_id=${encodeURIComponent(goalId)}`,
-
     credentials: "same-origin"
-
   })
     .then(res => res.text())
     .then(data => {
-
-      console.log("DEPOSIT:", data);
+      console.log("ALLOCATE:", data);
 
       if (data.trim() === "success") {
-
-        alert("Saved!");
-
+        alert("Allocated from Remaining Savings!");
         closeDeposit();
-        loadTotalTransactions();
-
+        document.getElementById("amount").value = "";
         loadSavings();
-
         loadGoals();
-
         loadHistory();
-
         loadAnalytics();
-
         loadAnalyticsPanel();
-
         loadGoalProgress();
-
+        loadTotalTransactions();
         loadRemainingBalance();
-
+        loadActiveGoals();
+      } else if (data.trim() === "insufficient") {
+        alert("Not enough Remaining Savings! Add to Total Savings first.");
       } else {
-
         alert(data);
-
       }
-
     })
-    .catch(err => {
-
-      console.error(
-        "Deposit error:",
-        err
-      );
-
-    });
+    .catch(err => console.error("Allocate error:", err));
 };
 
 
@@ -292,220 +258,64 @@ function loadHistory() {
 }
 
 function loadGoals() {
-
-  fetch("get_goals.php", {
-    credentials: "same-origin"
-  })
-
+  fetch("get_goals.php", { credentials: "same-origin" })
     .then(res => res.json())
-
     .then(data => {
-
       let html = "";
 
-      data.forEach(g => {
-
-        const percent =
-          (
-            (g.current_amount /
-              g.target_amount) * 100
-          ).toFixed(1);
+      data.filter(g => g.goal_name !== 'General Savings').forEach(g => {
+        const percent = ((g.current_amount / g.target_amount) * 100).toFixed(1);
 
         html += `
-
           <div class="goal-card">
-
             <div class="goal-top">
-
-  <h3>
-    ${g.goal_name}
-  </h3>
-
-  <div class="goal-actions">
-
-    <button
-    type="button"
-      class="goal-add-btn"
-      onclick="
-        openDeposit(${g.id})
-      "
-    >
-      ADD SAVINGS
-    </button>
-
-    <button
-    type="button"
-      class="goal-delete-btn"
-      onclick="
-        deleteGoal(${g.id})
-      "
-    >
-      DELETE GOAL
-    </button>
-
-  </div>
-
-</div>
-
-            <p>
-              ₱${g.current_amount}
-              /
-              ₱${g.target_amount}
-            </p>
-
-            <!-- PROGRESS -->
-
+              <h3>${g.goal_name}</h3>
+              <div class="goal-actions">
+                <button type="button" class="goal-add-btn" onclick="openDeposit(${g.id})">ADD SAVINGS</button>
+                <button type="button" class="goal-delete-btn" onclick="deleteGoal(${g.id})">DELETE GOAL</button>
+              </div>
+            </div>
+            <p>₱${g.current_amount} / ₱${g.target_amount}</p>
             <div class="progress-bar">
-
-              <div
-                class="progress-fill"
-                style="width:${percent}%"
-              >
-              </div>
-
+              <div class="progress-fill" style="width:${percent}%"></div>
             </div>
-
-            <!-- PREDICTION GUIDE -->
-
-            <select
-              class="prediction-select"
-
-              onchange="
-                updatePrediction(
-                  this,
-                  ${g.target_amount},
-                  ${g.current_amount},
-                  ${g.id}
-                )
-              "
-            >
-
-              <option value="1">
-                1 Week
-              </option>
-
-              <option value="2">
-                2 Weeks
-              </option>
-
-              <option value="3">
-                3 Weeks
-              </option>
-
-              <option value="4">
-                4 Weeks
-              </option>
-
-              <option value="1m">
-                1 Month
-              </option>
-
-              <option value="2m">
-                2 Months
-              </option>
-
-              <option value="3m">
-                3 Months
-              </option>
-
-              <option value="6m">
-                6 Months
-              </option>
-
-              <option value="12m">
-                12 Months
-              </option>
-
+            <select class="prediction-select" onchange="updatePrediction(this, ${g.target_amount}, ${g.current_amount}, ${g.id})">
+              <option value="1">1 Week</option>
+              <option value="2">2 Weeks</option>
+              <option value="3">3 Weeks</option>
+              <option value="4">4 Weeks</option>
+              <option value="1m">1 Month</option>
+              <option value="2m">2 Months</option>
+              <option value="3m">3 Months</option>
+              <option value="6m">6 Months</option>
+              <option value="12m">12 Months</option>
             </select>
-
-            <!-- ANALYTICS -->
-
             <div class="goal-analytics">
-
               <div class="mini-card">
-
-                <small>
-                  Daily
-                </small>
-
-                <strong
-                  id="daily-${g.id}"
-                >
-                  ₱0
-                </strong>
-
+                <small>Daily</small>
+                <strong id="daily-${g.id}">₱0</strong>
               </div>
-
               <div class="mini-card">
-
-                <small>
-                  Weekly
-                </small>
-
-                <strong
-                  id="weekly-${g.id}"
-                >
-                  ₱0
-                </strong>
-
+                <small>Weekly</small>
+                <strong id="weekly-${g.id}">₱0</strong>
               </div>
-
               <div class="mini-card">
-
-                <small>
-                  Monthly
-                </small>
-
-                <strong
-                  id="monthly-${g.id}"
-                >
-                  ₱0
-                </strong>
-
+                <small>Monthly</small>
+                <strong id="monthly-${g.id}">₱0</strong>
               </div>
-
             </div>
-
           </div>
-
         `;
       });
 
-      document.getElementById(
-        "goalList"
-      ).innerHTML = html;
-
+      document.getElementById("goalList").innerHTML = html;
       loadGoalAnalytics();
 
-      /* AUTO LOAD PREDICTION */
-
       setTimeout(() => {
-
-        document
-          .querySelectorAll(
-            ".prediction-select"
-          )
-
-          .forEach(select => {
-
-            select.dispatchEvent(
-              new Event("change")
-            );
-
-          });
-
+        document.querySelectorAll(".prediction-select").forEach(select => {
+          select.dispatchEvent(new Event("change"));
+        });
       }, 100);
-
-    });
-}
-
-function loadSavings() {
-  fetch("get_total.php", { credentials: "same-origin" })
-    .then(res => res.json())
-    .then(data => {
-      const totalElement = document.getElementById("totalSavings");
-      const target = parseFloat(data.total) || 0;
-      animateCounter(totalElement, target);
     });
 }
 
@@ -705,61 +515,62 @@ function loadAnalyticsPanel() {
 
 // DELETE FUNCTION
 function deleteGoal(id) {
-
-  showConfirm(
-
-    "Delete Goal",
-
-    "Delete this goal permanently?",
-
-    () => {
-
-      fetch("delete_goal.php", {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/x-www-form-urlencoded"
-        },
-
-        body: `id=${encodeURIComponent(id)}`,
-
-        credentials: "same-origin"
-
-      })
-
-        .then(res => res.text())
-
-        .then(data => {
-
-          console.log(
-            "DELETE GOAL:",
-            data
-          );
-
-          loadGoals();
-
-          loadGoalProgress();
-
-          loadActiveGoals();
-          loadRemainingBalance();
-
-        })
-
-        .catch(err => {
-
-          console.error(
-            "DELETE GOAL ERROR:",
-            err
-          );
-
-        });
-
-    }
-
-  );
+  // First, check if the goal is completed by fetching its data
+  fetch("get_goals.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(goals => {
+      const goal = goals.find(g => g.id == id);
+      
+      if (goal && goal.current_amount >= goal.target_amount) {
+        // Goal is completed — ask why they're deleting
+        showCompleteDeleteConfirm(id);
+      } else {
+        // Goal incomplete — normal delete with refund
+        showConfirm(
+          "Delete Goal",
+          "Delete this goal? The allocated amount will be refunded to Remaining Savings.",
+          () => executeGoalDelete(id, 'incomplete')
+        );
+      }
+    });
 }
+
+function showCompleteDeleteConfirm(id) {
+  document.getElementById('confirmTitle').textContent = 'Delete Completed Goal';
+  document.getElementById('confirmMessage').textContent = 'Why are you deleting this completed goal?';
+  document.getElementById('confirmModal').classList.remove('hidden');
+  
+  // Update modal buttons
+  const actions = document.querySelector('#confirmModal .modal-actions');
+  actions.innerHTML = `
+    <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
+    <button class="save-btn" onclick="executeGoalDelete(${id}, 'spent')" style="background: var(--danger);">I Spent It</button>
+    <button class="save-btn" onclick="executeGoalDelete(${id}, 'refund')">Refund Me</button>
+  `;
+}
+
+window.executeGoalDelete = (id, reason) => {
+  closeConfirm();
+  
+  fetch("delete_goal.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `id=${encodeURIComponent(id)}&reason=${reason}`,
+    credentials: "same-origin"
+  })
+  .then(res => res.text())
+  .then(data => {
+    console.log("DELETE GOAL:", data);
+    loadGoals();
+    loadGoalProgress();
+    loadActiveGoals();
+    loadSavings();
+    loadRemainingBalance();
+    loadTotalTransactions();
+    loadHistory();
+  })
+  .catch(err => console.error("DELETE GOAL ERROR:", err));
+};
 
 function deleteTransaction(id) {
   console.log("Deleting transaction ID:", id);
@@ -963,11 +774,8 @@ function loadActiveGoals() {
   })
     .then(res => res.json())
     .then(data => {
-
-      document.getElementById(
-        "activeGoals"
-      ).textContent = data.length;
-
+      const realGoals = data.filter(g => g.goal_name !== 'General Savings');
+      document.getElementById("activeGoals").textContent = realGoals.length;
     })
     .catch(error => {
 
@@ -1103,6 +911,7 @@ window.showPanel = (panel) => {
   if (panel === "home") {
     updateGreeting();
     loadSavings();
+    loadRemainingBalance();
   }
 };
 
@@ -1114,14 +923,9 @@ function logout() {
 
 // MODAL FIX
 window.openDeposit = (goalId) => {
-
-  document
-    .getElementById("depositModal")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("depositGoalId")
-    .value = goalId;
+  document.getElementById("depositModal").classList.remove("hidden");
+  document.getElementById("depositGoalId").value = goalId;
+  document.getElementById("amount").value = ""; // ← ADD THIS
 };
 
 window.closeDeposit = () => {
@@ -1151,21 +955,31 @@ window.generalDeposit = () => {
     body: `amount=${encodeURIComponent(amount)}`,
     credentials: "same-origin"
   })
-  .then(res => res.text())
-  .then(data => {
-    if (data.trim() === "success") {
-      alert("Savings added!");
-      closeGeneralDeposit();
-      document.getElementById("generalAmount").value = "";
-      loadSavings();
-      loadTotalTransactions();
-      loadRemainingBalance();
-    } else {
-      alert(data);
-    }
-  })
-  .catch(err => console.error("General deposit error:", err));
+    .then(res => res.text())
+    .then(data => {
+      if (data.trim() === "success") {
+        alert("Savings added!");
+        closeGeneralDeposit();
+        document.getElementById("generalAmount").value = "";
+        loadSavings();
+        loadTotalTransactions();
+        loadRemainingBalance();
+      } else {
+        alert(data);
+      }
+    })
+    .catch(err => console.error("General deposit error:", err));
 };
+
+function loadSavings() {
+  fetch("get_total.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(data => {
+      const totalElement = document.getElementById("totalSavings");
+      const target = parseFloat(data.total) || 0;
+      animateCounter(totalElement, target);
+    });
+}
 
 // navigation
 window.goRegister = () => window.location.href = "register.html";
