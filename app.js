@@ -75,82 +75,7 @@ function animateCounter(element, target) {
   requestAnimationFrame(update);
 }
 
-// Rotating savings tips
-const savingsTips = [
-  'Pay yourself first — save before you spend.',
-  'Track every peso. Small leaks sink big ships.',
-  'Set specific goals. "New laptop" beats "save more".',
-  'The 50-30-20 rule: 50% needs, 30% wants, 20% savings.',
-  'Automate your savings. Set it and forget it.',
-  'Wait 24 hours before big purchases. Impulse kills budgets.',
-  'Save your bonuses and windfalls, future you will thank you.',
-  'Comparison is the thief of joy. Focus on your own goals.',
-  'A little saved daily becomes a lot saved monthly.',
-  '"A penny saved is a penny earned." — Benjamin Franklin"',
-  'Start small. Even ₱100 a week adds up to over ₱5,000 a year.',
-  '"Beware of little expenses; a small leak will sink a great ship." — Benjamin Franklin',
-  '"The quickest way to double your money is to fold it in half and put it in your back pocket." — Will Rogers',
-  'Emergency fund first — aim for 3-6 months of expenses.',
-  '"Budgeting is telling your money where to go instead of wondering where it went." — Dave Ramsey'
 
-
-
-
-];
-
-let tipIndex = 0;
-let tipInterval;
-
-function buildTipDots() {
-  const dotsContainer = document.getElementById('tipDots');
-  if (!dotsContainer) return;
-  
-  dotsContainer.innerHTML = '';
-  savingsTips.forEach((_, i) => {
-    const dot = document.createElement('button');
-    dot.className = 'tip-dot' + (i === 0 ? ' active' : '');
-    dot.setAttribute('aria-label', `Tip ${i + 1}`);
-    dot.onclick = () => showTip(i);
-    dotsContainer.appendChild(dot);
-  });
-}
-
-function showTip(index) {
-  const tipElement = document.getElementById('savingsTip');
-  if (!tipElement) return;
-  
-  tipIndex = index;
-  
-  // Update dots
-  document.querySelectorAll('.tip-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === index);
-  });
-  
-  // Fade transition
-  tipElement.style.opacity = '0';
-  setTimeout(() => {
-    tipElement.textContent = savingsTips[index];
-    tipElement.style.opacity = '1';
-  }, 300);
-  
-  // Reset auto-rotation timer
-  clearInterval(tipInterval);
-  tipInterval = setInterval(nextTip, 10000);
-}
-
-function nextTip() {
-  tipIndex = (tipIndex + 1) % savingsTips.length;
-  showTip(tipIndex);
-}
-
-function startTipRotation() {
-  const tipElement = document.getElementById('savingsTip');
-  if (!tipElement) return;
-  
-  buildTipDots();
-  tipElement.textContent = savingsTips[0];
-  tipInterval = setInterval(nextTip, 10000);
-}
 
 window.toggleDarkMode = () => {
   const body = document.body;
@@ -226,9 +151,7 @@ window.deposit = () => {
         "application/x-www-form-urlencoded"
     },
 
-    body:
-  `amount=${encodeURIComponent(amount)}
-   &goal_id=${encodeURIComponent(goalId)}`,
+    body: `amount=${encodeURIComponent(amount)}&goal_id=${encodeURIComponent(goalId)}`,
 
     credentials: "same-origin"
 
@@ -802,8 +725,7 @@ function deleteGoal(id) {
             "application/x-www-form-urlencoded"
         },
 
-        body:
-          `goal_id=${encodeURIComponent(id)}`,
+        body: `id=${encodeURIComponent(id)}`,
 
         credentials: "same-origin"
 
@@ -892,71 +814,36 @@ function startClock() {
     const now = new Date();
 
     const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
+      "Sunday", "Monday", "Tuesday", "Wednesday",
+      "Thursday", "Friday", "Saturday"
     ];
 
     const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
     ];
 
-    const day =
-      days[now.getDay()];
+    const day = days[now.getDay()];
 
-    let hours =
-      now.getHours();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
 
-    const minutes =
-      String(
-        now.getMinutes()
-      ).padStart(2, "0");
+    const date = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 
-    const ampm =
-      hours >= 12 ? "PM" : "AM";
+    document.getElementById("clockDay").textContent = day;
+    document.getElementById("clockTime").textContent = `${hours}:${minutes} ${ampm}`;
+    document.getElementById("clockDate").textContent = date;
 
-    hours =
-      hours % 12 || 12;
-
-    const date =
-      `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-
-    document.getElementById(
-      "clockDay"
-    ).textContent = day;
-
-    document.getElementById(
-      "clockTime"
-    ).textContent =
-      `${hours}:${minutes} ${ampm}`;
-
-    document.getElementById(
-      "clockDate"
-    ).textContent = date;
+   
+    
   }
 
   updateClock();
-
-  setInterval(
-    updateClock,
-    1000
-  );
+  setInterval(updateClock, 1000);
 }
+
 
 function loadGoalProgress() {
 
@@ -1118,62 +1005,67 @@ function startSavingsTips() {
 
   const tips = [
 
-    "Emergency fund first — aim for 3-6 months of expenses.",
-
-    "Track every peso. Small leaks sink big ships.",
-
-    "Save before spending, not after.",
-
-    "Consistency beats large one-time savings.",
-
-    "Avoid impulse buying — wait 24 hours first.",
-
-    "Set realistic weekly savings goals.",
-
-    "Financial freedom starts with discipline.",
-
-    "A small daily save becomes huge yearly growth."
+    'Pay yourself first — save before you spend.',
+  'Track every peso. Small leaks sink big ships.',
+  'Set specific goals. "New laptop" beats "save more".',
+  'The 50-30-20 rule: 50% needs, 30% wants, 20% savings.',
+  'Automate your savings. Set it and forget it.',
+  'Wait 24 hours before big purchases. Impulse kills budgets.',
+  'Save your bonuses and windfalls, future you will thank you.',
+  'Comparison is the thief of joy. Focus on your own goals.',
+  'A little saved daily becomes a lot saved monthly.',
+  '"A penny saved is a penny earned." — Benjamin Franklin"',
+  'Start small. Even ₱100 a week adds up to over ₱5,000 a year.',
+  '"Beware of little expenses; a small leak will sink a great ship." — Benjamin Franklin',
+  '"The quickest way to double your money is to fold it in half and put it in your back pocket." — Will Rogers',
+  'Emergency fund first — aim for 3-6 months of expenses.',
+  '"Budgeting is telling your money where to go instead of wondering where it went." — Dave Ramsey'
 
   ];
 
-  let current = 0;
+   let current = 0;
+  const tipText = document.getElementById("tipsText");
+  const dotsContainer = document.getElementById("tipDots");
 
-  const tipText =
-    document.getElementById("tipsText");
+  // Build dots
+  if (dotsContainer) {
+    dotsContainer.innerHTML = '';
+    const maxDots = Math.min(4, tips.length);
+    for (let i = 0; i < maxDots; i++) {
+      const dot = document.createElement('button');
+      dot.className = 'tip-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Tip ' + (i + 1));
+      dot.onclick = () => {
+        current = i;
+        updateTip();
+      };
+      dotsContainer.appendChild(dot);
+    }
+  }
 
-  setInterval(() => {
+  function updateTip() {
+    const maxDots = Math.min(4, tips.length);
+const activeDotIndex = current % maxDots;
+document.querySelectorAll('#tipDots .tip-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === activeDotIndex);
+});
 
-    tipText.classList.remove(
-      "tip-slide-in"
-    );
-
-    tipText.classList.add(
-      "tip-slide-out"
-    );
+    // Animate text
+    tipText.classList.remove("tip-slide-in");
+    tipText.classList.add("tip-slide-out");
 
     setTimeout(() => {
-
-      current++;
-
-      if (current >= tips.length) {
-
-        current = 0;
-      }
-
-      tipText.textContent =
-        tips[current];
-
-      tipText.classList.remove(
-        "tip-slide-out"
-      );
-
-      tipText.classList.add(
-        "tip-slide-in"
-      );
-
+      tipText.textContent = tips[current];
+      tipText.classList.remove("tip-slide-out");
+      tipText.classList.add("tip-slide-in");
     }, 400);
+  }
 
-  }, 15000);
+  // Rotate every 15 seconds
+  setInterval(() => {
+    current = (current + 1) % tips.length;
+    updateTip();
+  }, 7000);
 }
 
 window.showPanel = (panel) => {
@@ -1202,8 +1094,7 @@ window.showPanel = (panel) => {
   if (panel === "home") {
     updateGreeting();
     loadSavings();
-    startTipRotation();
-  }
+}
 };
 
 
@@ -1240,9 +1131,38 @@ window.onload = () => {
   loadAnalytics();
   loadAnalyticsPanel();
   loadGoalProgress();
-  startTipRotation();
   startClock();
   loadActiveGoals();
   loadTotalTransactions();
   startSavingsTips();
+  renderCalendar();
 };
+
+function renderCalendar() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const today = now.getDate();
+
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+  document.getElementById("calMonth").textContent = monthNames[month];
+  document.getElementById("calYear").textContent = year;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  let html = '';
+
+  for (let i = 0; i < firstDay; i++) {
+    html += '<span class="cal-day-cell empty"></span>';
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = (d === today) ? ' today' : '';
+    html += `<span class="cal-day-cell${isToday}">${d}</span>`;
+  }
+
+  document.getElementById("calDays").innerHTML = html;
+}

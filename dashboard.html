@@ -11,18 +11,11 @@
 
   <aside class="sidebar">
     <div class="sidebar-brand">
+      <img src="images/ipontrack-logo.jpg" alt="IponTrack Logo" class="sidebar-logo">
+      <h2 class="logo">IponTrack</h2>
+    </div>
 
-  <img
-    src="images/ipontrack-logo.jpg"
-    alt="IponTrack Logo"
-    class="sidebar-logo"
-  >
-
-  <h2 class="logo">IponTrack</h2>
-
-</div>
-
-    <button onclick="showPanel('Home')">Home</button>
+    <button onclick="showPanel('home')">Home</button>
     <button onclick="showPanel('goals')">Goals</button>
     <button onclick="showPanel('history')">History</button>
     <button onclick="showPanel('analytics')">Savings Analytics</button>
@@ -35,122 +28,84 @@
   <main class="main">
 
     <!-- HOME -->
-<section id="Home" class="panel">
-  
-  <!-- Greeting Card -->
-  <div class="overview-card greeting-card">
-    <p id="greetingMessage" class="greeting">Hello!</p>
-    <p class="greeting-sub">Let's grow your savings today </p>
-  </div>
+    <section id="home" class="panel">
+      
+      <!-- Greeting Card -->
+      <div class="overview-card greeting-card">
+        <div class="greeting-row">
+          
+          <!-- Left: Greeting -->
+          <div class="greeting-left">
+            <p id="greetingMessage" class="greeting">Hello!</p>
+            <p class="greeting-sub">Let's grow your savings today</p>
+          </div>
 
-  <div class="overview-row">
+          <!-- Right: Clock + Calendar -->
+          <div class="greeting-right">
+            
+            <!-- Clock -->
+            <div class="greeting-clock">
+              <p class="clock-day" id="clockDay">Loading...</p>
+              <h2 class="clock-time" id="clockTime">--:--</h2>
+              <small class="clock-date" id="clockDate">Loading date...</small>
+            </div>
 
-  <div class="overview-card">
+            <!-- Visual Calendar -->
+            <div class="greeting-calendar" id="miniCalendar">
+              <div class="cal-header">
+                <span class="cal-month" id="calMonth">May</span>
+                <span class="cal-year" id="calYear">2026</span>
+              </div>
+              <div class="cal-weekdays">
+                <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+              </div>
+              <div class="cal-days" id="calDays"></div>
+            </div>
 
-    <p class="label">Total Savings</p>
+          </div>
 
-    <h1 id="totalSavings">₱0</h1>
+        </div>
+      </div>
 
-    
+      <div class="overview-row">
 
-  </div>
+        <div class="overview-card">
+          <p class="label">Total Savings</p>
+          <h1 id="totalSavings">₱0</h1>
+        </div>
 
-  <div class="clock-card">
+        <div class="goals-card">
+          <p class="goals-label">ACTIVE GOALS</p>
+          <h2 class="goals-count" id="activeGoals">0</h2>
+          <small class="goals-subtext">Goals currently tracked</small>
+        </div>
 
-    <p class="clock-day" id="clockDay">
-      Loading...
-    </p>
+        <div class="transactions-card">
+          <p class="transactions-label">TOTAL TRANSACTIONS</p>
+          <h2 class="transactions-total" id="totalTransactions">₱0</h2>
+          <small class="transactions-subtext">Transactions recorded</small>
+        </div>
 
-    <h2 class="clock-time" id="clockTime">
-      --:--
-    </h2>
+      </div>
 
-    <small class="clock-date" id="clockDate">
-      Loading date...
-    </small>
+      <div class="tips-card">
+        <div class="tips-header">
+          <div class="tips-icon">💡</div>
+          <div>
+            <p class="tips-label">SAVING TIPS</p>
+            <h3 class="tips-title">Smart Money Habit</h3>
+          </div>
+        </div>
 
-  </div>
+        <p class="tips-text" id="tipsText">Emergency fund first — aim for 3-6 months of expenses.</p>
+        <div class="tip-dots" id="tipDots"></div>
 
-  <div class="goals-card">
+        <div class="tips-footer">
+          <span class="tips-badge">Financial Discipline</span>
+        </div>
+      </div>
 
-  <p class="goals-label">
-    ACTIVE GOALS
-  </p>
-
-  <h2
-    class="goals-count"
-    id="activeGoals"
-  >
-    0
-  </h2>
-
-  <small class="goals-subtext">
-    Goals currently tracked
-  </small>
-
-</div>
-
-<div class="transactions-card">
-
-  <p class="transactions-label">
-    TOTAL TRANSACTIONS
-  </p>
-
-  <h2
-    class="transactions-total"
-    id="totalTransactions"
-  >
-    ₱0
-  </h2>
-
-  <small class="transactions-subtext">
-    Transactions recorded
-  </small>
-
-</div>
-
-</div>
-
-  <div class="tips-card">
-
-  <div class="tips-header">
-
-    <div class="tips-icon">
-      💡
-    </div>
-
-    <div>
-
-      <p class="tips-label">
-        SAVINGS TIP
-      </p>
-
-      <h3 class="tips-title">
-        Smart Money Habit
-      </h3>
-
-    </div>
-
-  </div>
-
-  <p
-    class="tips-text"
-    id="tipsText"
-  >
-    Emergency fund first — aim for 3-6 months of expenses.
-  </p>
-
-  <div class="tips-footer">
-
-    <span class="tips-badge">
-      Financial Discipline
-    </span>
-
-  </div>
-
-</div>
-
-</section>
+    </section>
 
     <!-- GOALS -->
     <section id="goals" class="panel hidden">
@@ -162,7 +117,6 @@
         <button onclick="addGoal()">Add Goal</button>
       </div>
 
-      <!-- goals render here -->
       <div id="goalList"></div>
     </section>
 
@@ -184,21 +138,15 @@
 
     <!-- ANALYTICS -->
     <section id="analytics" class="panel hidden">
-
       <h1>Savings Analytics</h1>
 
-      <p id="noAnalytics" style="color:#94a3b8; display:none;">
-        No analytics yet
-      </p>
+      <p id="noAnalytics" style="color:#94a3b8; display:none;">No analytics yet</p>
 
-      <!-- SAVINGS ACTIVITY -->
       <div id="analyticsList"></div>
 
-      <!-- 🔥 NEW GOAL PROGRESS -->
       <h2 class="progress-title">Goal Progress</h2>
 
       <div id="goalProgressList"></div>
-
     </section>
 
     <!-- PREMIUM -->
@@ -206,7 +154,6 @@
       <h1>Activate Premium</h1>
 
       <input id="activation_code" placeholder="Enter activation code">
-
       <button onclick="activate()">Activate</button>
 
       <p id="premiumStatus">Free Account</p>
@@ -216,92 +163,30 @@
 
 </div>
 
-<!-- MODAL -->
+<!-- DEPOSIT MODAL -->
 <div id="depositModal" class="modal hidden">
-
   <div class="modal-box">
-
-  <h3>
-    Add Savings
-  </h3>
-
-  <input
-    id="amount"
-    type="number"
-    placeholder="Enter amount"
-  >
-
-  <!-- GOAL ID -->
-
-  <input
-    type="hidden"
-    id="depositGoalId"
-  >
-
-  <div class="modal-actions">
-
-    <button
-      class="cancel-btn"
-      onclick="closeDeposit()"
-    >
-      Cancel
-    </button>
-
-    <button
-      class="save-btn"
-      onclick="deposit()"
-    >
-      Save Savings
-    </button>
-
+    <h3>Add Savings</h3>
+    <input id="amount" type="number" placeholder="Enter amount">
+    <input type="hidden" id="depositGoalId">
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeDeposit()">Cancel</button>
+      <button class="save-btn" onclick="deposit()">Save Savings</button>
+    </div>
   </div>
-
 </div>
 
 <!-- CONFIRMATION MODAL -->
-
-<div
-  id="confirmModal"
-  class="modal hidden"
-  role="dialog"
-  aria-modal="true"
->
-
+<div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-box confirm-box">
-
-    <div class="confirm-icon">
-      ⚠️
-    </div>
-
-    <h3 id="confirmTitle">
-      Are you sure?
-    </h3>
-
-    <p id="confirmMessage">
-      This action cannot be undone.
-    </p>
-
+    <div class="confirm-icon">⚠️</div>
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p id="confirmMessage">This action cannot be undone.</p>
     <div class="modal-actions">
-
-      <button
-        class="cancel-btn"
-        onclick="closeConfirm()"
-      >
-        Cancel
-      </button>
-
-      <button
-        class="save-btn"
-        onclick="executeConfirm()"
-        style="background: var(--danger);"
-      >
-        Delete
-      </button>
-
+      <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
+      <button class="save-btn" onclick="executeConfirm()" style="background: var(--danger);">Delete</button>
     </div>
-
   </div>
-
 </div>
 
 <script src="app.js"></script>
