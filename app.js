@@ -34,10 +34,10 @@ window.executeConfirm = () => {
 function updateGreeting() {
   const greeting = document.getElementById('greetingMessage');
   if (!greeting) return;
-  
+
   const hour = new Date().getHours();
   let message;
-  
+
   if (hour < 12) {
     message = 'Good morning! ☀️';
   } else if (hour < 17) {
@@ -45,7 +45,7 @@ function updateGreeting() {
   } else {
     message = 'Good evening! 🌙';
   }
-  
+
   greeting.textContent = message;
 }
 
@@ -54,24 +54,24 @@ function animateCounter(element, target) {
   const startValue = 0;
   const duration = 1200; // 1.2 seconds
   const startTime = performance.now();
-  
+
   function update(currentTime) {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / duration, 1);
-    
+
     // Ease out cubic
     const eased = 1 - Math.pow(1 - progress, 3);
     const current = Math.floor(startValue + (target - startValue) * eased);
-    
+
     element.textContent = '₱' + current.toLocaleString();
-    
+
     if (progress < 1) {
       requestAnimationFrame(update);
     } else {
       element.textContent = '₱' + target.toLocaleString();
     }
   }
-  
+
   requestAnimationFrame(update);
 }
 
@@ -111,17 +111,17 @@ window.login = () => {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
   })
-  .then(res => res.text())
-  .then(data => {
-    console.log("LOGIN:", data);
+    .then(res => res.text())
+    .then(data => {
+      console.log("LOGIN:", data);
 
-    if (data.trim() === "success") {
-      window.location.href = "dashboard.html"; // ✅ redirect fixed
-    } else {
-      alert(data);
-    }
-  })
-  .catch(err => console.error("Login error:", err));
+      if (data.trim() === "success") {
+        window.location.href = "dashboard.html"; // ✅ redirect fixed
+      } else {
+        alert(data);
+      }
+    })
+    .catch(err => console.error("Login error:", err));
 };
 
 window.deposit = () => {
@@ -129,10 +129,10 @@ window.deposit = () => {
   const amount =
     document.getElementById("amount").value;
 
-    const goalId =
-  document.getElementById(
-    "depositGoalId"
-  ).value;
+  const goalId =
+    document.getElementById(
+      "depositGoalId"
+    ).value;
 
   if (!amount) {
 
@@ -156,49 +156,47 @@ window.deposit = () => {
     credentials: "same-origin"
 
   })
-  .then(res => res.text())
-  .then(data => {
+    .then(res => res.text())
+    .then(data => {
 
-    console.log("DEPOSIT:", data);
+      console.log("DEPOSIT:", data);
 
-    if (data.trim() === "success") {
+      if (data.trim() === "success") {
 
-      alert("Saved!");
+        alert("Saved!");
 
-      closeDeposit();
-      loadTotalTransactions();
+        closeDeposit();
+        loadTotalTransactions();
 
-      /* =========================
-         REFRESH ALL UI
-      ========================= */
+        loadSavings();
 
-      loadSavings();
+        loadGoals();
 
-      loadGoals();
+        loadHistory();
 
-      loadHistory();
+        loadAnalytics();
 
-      loadAnalytics();
+        loadAnalyticsPanel();
 
-      loadAnalyticsPanel();
+        loadGoalProgress();
 
-      loadGoalProgress();
+        loadRemainingBalance();
 
-    } else {
+      } else {
 
-      alert(data);
+        alert(data);
 
-    }
+      }
 
-  })
-  .catch(err => {
+    })
+    .catch(err => {
 
-    console.error(
-      "Deposit error:",
-      err
-    );
+      console.error(
+        "Deposit error:",
+        err
+      );
 
-  });
+    });
 };
 
 
@@ -217,19 +215,19 @@ window.addGoal = () => {
     body: `name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}`,
     credentials: "same-origin"
   })
-  .then(res => res.text())
-  .then(data => {
-    console.log("ADD GOAL:", data);
+    .then(res => res.text())
+    .then(data => {
+      console.log("ADD GOAL:", data);
 
-    if (data.trim() === "success") {
-      alert("Goal added!");
-      loadGoals();
-      loadActiveGoals(); // Refresh
-    } else {
-      alert(data);
-    }
-  })
-  .catch(err => console.error("Error:", err));
+      if (data.trim() === "success") {
+        alert("Goal added!");
+        loadGoals();
+        loadActiveGoals(); // Refresh
+      } else {
+        alert(data);
+      }
+    })
+    .catch(err => console.error("Error:", err));
 };
 
 
@@ -242,18 +240,18 @@ window.register = () => {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
   })
-  .then(res => res.text())
-  .then(data => {
-    console.log("REGISTER:", data);
+    .then(res => res.text())
+    .then(data => {
+      console.log("REGISTER:", data);
 
-    if (data.trim() === "success") {
-      alert("Registered successfully");
-      window.location.href = "index.html"; // redirect to login
-    } else {
-      alert(data);
-    }
-  })
-  .catch(err => console.error("Register error:", err));
+      if (data.trim() === "success") {
+        alert("Registered successfully");
+        window.location.href = "index.html"; // redirect to login
+      } else {
+        alert(data);
+      }
+    })
+    .catch(err => console.error("Register error:", err));
 };
 
 function loadHistory() {
@@ -261,14 +259,14 @@ function loadHistory() {
   fetch("get_transactions.php", {
     credentials: "same-origin"
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    let html = "";
+      let html = "";
 
-    data.forEach(t => {
+      data.forEach(t => {
 
-      html += `
+        html += `
         <tr>
 
           <td>₱${t.amount}</td>
@@ -286,11 +284,11 @@ function loadHistory() {
 
         </tr>
       `;
+      });
+
+      document.getElementById("historyList").innerHTML = html;
+
     });
-
-    document.getElementById("historyList").innerHTML = html;
-
-  });
 }
 
 function loadGoals() {
@@ -516,94 +514,94 @@ function loadAnalytics() {
   fetch("get_analytics.php", {
     credentials: "same-origin"
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    const daily =
-      document.getElementById("dailyAvg");
+      const daily =
+        document.getElementById("dailyAvg");
 
-    const weekly =
-      document.getElementById("weeklyAvg");
+      const weekly =
+        document.getElementById("weeklyAvg");
 
-    const monthly =
-      document.getElementById("monthlyAvg");
+      const monthly =
+        document.getElementById("monthlyAvg");
 
-    if (daily) {
-      daily.textContent = "₱" + data.daily;
-    }
-
-    if (weekly) {
-      weekly.textContent = "₱" + data.weekly;
-    }
-
-    if (monthly) {
-      monthly.textContent = "₱" + data.monthly;
-    }
-
-    const noAnalytics =
-      document.getElementById("noAnalytics");
-
-    if (noAnalytics) {
-
-      if (!data || Object.keys(data).length === 0) {
-        noAnalytics.style.display = "block";
-      } else {
-        noAnalytics.style.display = "none";
+      if (daily) {
+        daily.textContent = "₱" + data.daily;
       }
 
-    }
+      if (weekly) {
+        weekly.textContent = "₱" + data.weekly;
+      }
 
-  })
-  .catch(err => {
+      if (monthly) {
+        monthly.textContent = "₱" + data.monthly;
+      }
 
-    console.error("Analytics error:", err);
+      const noAnalytics =
+        document.getElementById("noAnalytics");
 
-  });
+      if (noAnalytics) {
+
+        if (!data || Object.keys(data).length === 0) {
+          noAnalytics.style.display = "block";
+        } else {
+          noAnalytics.style.display = "none";
+        }
+
+      }
+
+    })
+    .catch(err => {
+
+      console.error("Analytics error:", err);
+
+    });
 }
 
 function loadGoalAnalytics() {
 
-  
+
 
   fetch("get_goal_analytics.php", {
     credentials: "same-origin"
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    console.log("ANALYTICS:", data);
+      console.log("ANALYTICS:", data);
 
-    data.forEach(g => {
+      data.forEach(g => {
 
-      const daily =
-        document.getElementById(`daily-${g.goal_id}`);
+        const daily =
+          document.getElementById(`daily-${g.goal_id}`);
 
-      const weekly =
-        document.getElementById(`weekly-${g.goal_id}`);
+        const weekly =
+          document.getElementById(`weekly-${g.goal_id}`);
 
-      const monthly =
-        document.getElementById(`monthly-${g.goal_id}`);
+        const monthly =
+          document.getElementById(`monthly-${g.goal_id}`);
 
-      if (daily) {
-        daily.textContent = "₱" + g.daily;
-      }
+        if (daily) {
+          daily.textContent = "₱" + g.daily;
+        }
 
-      if (weekly) {
-        weekly.textContent = "₱" + g.weekly;
-      }
+        if (weekly) {
+          weekly.textContent = "₱" + g.weekly;
+        }
 
-      if (monthly) {
-        monthly.textContent = "₱" + g.monthly;
-      }
+        if (monthly) {
+          monthly.textContent = "₱" + g.monthly;
+        }
+
+      });
+
+    })
+    .catch(err => {
+
+      console.error("Goal analytics error:", err);
 
     });
-
-  })
-  .catch(err => {
-
-    console.error("Goal analytics error:", err);
-
-  });
 }
 
 function updatePrediction(
@@ -731,31 +729,32 @@ function deleteGoal(id) {
 
       })
 
-      .then(res => res.text())
+        .then(res => res.text())
 
-      .then(data => {
+        .then(data => {
 
-        console.log(
-          "DELETE GOAL:",
-          data
-        );
+          console.log(
+            "DELETE GOAL:",
+            data
+          );
 
-        loadGoals();
+          loadGoals();
 
-        loadGoalProgress();
+          loadGoalProgress();
 
-        loadActiveGoals();
+          loadActiveGoals();
+          loadRemainingBalance();
 
-      })
+        })
 
-      .catch(err => {
+        .catch(err => {
 
-        console.error(
-          "DELETE GOAL ERROR:",
-          err
-        );
+          console.error(
+            "DELETE GOAL ERROR:",
+            err
+          );
 
-      });
+        });
 
     }
 
@@ -777,28 +776,29 @@ function deleteTransaction(id) {
         body: `id=${id}`,
         credentials: "same-origin"
       })
-      .then(res => {
-        console.log("Response status:", res.status);
-        return res.text();
-      })
-      .then(data => {
-        console.log("Server response:", data);
+        .then(res => {
+          console.log("Response status:", res.status);
+          return res.text();
+        })
+        .then(data => {
+          console.log("Server response:", data);
 
-        if (data.trim() === "success") {
-          console.log("Delete successful, refreshing...");
-          loadHistory();
-          loadSavings();
-          loadGoals();
-          loadAnalyticsPanel();
-          loadGoalProgress();
-        } else {
-          console.log("Delete failed:", data);
-          alert(data);
-        }
-      })
-      .catch(err => {
-        console.error("Fetch error:", err);
-      });
+          if (data.trim() === "success") {
+            console.log("Delete successful, refreshing...");
+            loadHistory();
+            loadSavings();
+            loadGoals();
+            loadAnalyticsPanel();
+            loadGoalProgress();
+            loadRemainingBalance();
+          } else {
+            console.log("Delete failed:", data);
+            alert(data);
+          }
+        })
+        .catch(err => {
+          console.error("Fetch error:", err);
+        });
     }
   );
 }
@@ -836,8 +836,8 @@ function startClock() {
     document.getElementById("clockTime").textContent = `${hours}:${minutes} ${ampm}`;
     document.getElementById("clockDate").textContent = date;
 
-   
-    
+
+
   }
 
   updateClock();
@@ -850,16 +850,16 @@ function loadGoalProgress() {
   fetch("get_goal_progress.php", {
     credentials: "same-origin"
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    console.log("GOAL PROGRESS:", data);
+      console.log("GOAL PROGRESS:", data);
 
-    let html = "";
+      let html = "";
 
-    data.forEach(g => {
+      data.forEach(g => {
 
-      html += `
+        html += `
         <div style="
           background:var(--card-bg);
           backdrop-filter:blur(15px);
@@ -928,19 +928,28 @@ function loadGoalProgress() {
 
         </div>
       `;
+      });
+
+      document.getElementById("goalProgressList").innerHTML = html;
+
+    })
+    .catch(error => {
+
+      console.error(
+        "GOAL PROGRESS ERROR:",
+        error
+      );
+
     });
+}
 
-    document.getElementById("goalProgressList").innerHTML = html;
-
-  })
-  .catch(error => {
-
-    console.error(
-      "GOAL PROGRESS ERROR:",
-      error
-    );
-
-  });
+function loadRemainingBalance() {
+  fetch("get_remaining.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("remainingBalance").textContent = "₱" + parseFloat(data.remaining).toLocaleString();
+    })
+    .catch(err => console.error("Remaining balance error:", err));
 }
 
 /* =========================
@@ -952,22 +961,22 @@ function loadActiveGoals() {
   fetch("get_goals.php", {
     credentials: "same-origin"
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    document.getElementById(
-      "activeGoals"
-    ).textContent = data.length;
+      document.getElementById(
+        "activeGoals"
+      ).textContent = data.length;
 
-  })
-  .catch(error => {
+    })
+    .catch(error => {
 
-    console.error(
-      "ACTIVE GOALS ERROR:",
-      error
-    );
+      console.error(
+        "ACTIVE GOALS ERROR:",
+        error
+      );
 
-  });
+    });
 }
 
 /* =========================
@@ -979,22 +988,22 @@ function loadTotalTransactions() {
   fetch("get_transactions.php", {
     credentials: "same-origin"
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    document.getElementById(
-      "totalTransactions"
-    ).textContent = data.length;
+      document.getElementById(
+        "totalTransactions"
+      ).textContent = data.length;
 
-  })
-  .catch(error => {
+    })
+    .catch(error => {
 
-    console.error(
-      "TOTAL TRANSACTIONS ERROR:",
-      error
-    );
+      console.error(
+        "TOTAL TRANSACTIONS ERROR:",
+        error
+      );
 
-  });
+    });
 }
 
 /* =========================
@@ -1006,24 +1015,24 @@ function startSavingsTips() {
   const tips = [
 
     'Pay yourself first — save before you spend.',
-  'Track every peso. Small leaks sink big ships.',
-  'Set specific goals. "New laptop" beats "save more".',
-  'The 50-30-20 rule: 50% needs, 30% wants, 20% savings.',
-  'Automate your savings. Set it and forget it.',
-  'Wait 24 hours before big purchases. Impulse kills budgets.',
-  'Save your bonuses and windfalls, future you will thank you.',
-  'Comparison is the thief of joy. Focus on your own goals.',
-  'A little saved daily becomes a lot saved monthly.',
-  '"A penny saved is a penny earned." — Benjamin Franklin"',
-  'Start small. Even ₱100 a week adds up to over ₱5,000 a year.',
-  '"Beware of little expenses; a small leak will sink a great ship." — Benjamin Franklin',
-  '"The quickest way to double your money is to fold it in half and put it in your back pocket." — Will Rogers',
-  'Emergency fund first — aim for 3-6 months of expenses.',
-  '"Budgeting is telling your money where to go instead of wondering where it went." — Dave Ramsey'
+    'Track every peso. Small leaks sink big ships.',
+    'Set specific goals. "New laptop" beats "save more".',
+    'The 50-30-20 rule: 50% needs, 30% wants, 20% savings.',
+    'Automate your savings. Set it and forget it.',
+    'Wait 24 hours before big purchases. Impulse kills budgets.',
+    'Save your bonuses and windfalls, future you will thank you.',
+    'Comparison is the thief of joy. Focus on your own goals.',
+    'A little saved daily becomes a lot saved monthly.',
+    '"A penny saved is a penny earned." — Benjamin Franklin"',
+    'Start small. Even ₱100 a week adds up to over ₱5,000 a year.',
+    '"Beware of little expenses; a small leak will sink a great ship." — Benjamin Franklin',
+    '"The quickest way to double your money is to fold it in half and put it in your back pocket." — Will Rogers',
+    'Emergency fund first — aim for 3-6 months of expenses.',
+    '"Budgeting is telling your money where to go instead of wondering where it went." — Dave Ramsey'
 
   ];
 
-   let current = 0;
+  let current = 0;
   const tipText = document.getElementById("tipsText");
   const dotsContainer = document.getElementById("tipDots");
 
@@ -1045,10 +1054,10 @@ function startSavingsTips() {
 
   function updateTip() {
     const maxDots = Math.min(4, tips.length);
-const activeDotIndex = current % maxDots;
-document.querySelectorAll('#tipDots .tip-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === activeDotIndex);
-});
+    const activeDotIndex = current % maxDots;
+    document.querySelectorAll('#tipDots .tip-dot').forEach((dot, i) => {
+      dot.classList.toggle('active', i === activeDotIndex);
+    });
 
     // Animate text
     tipText.classList.remove("tip-slide-in");
@@ -1094,7 +1103,7 @@ window.showPanel = (panel) => {
   if (panel === "home") {
     updateGreeting();
     loadSavings();
-}
+  }
 };
 
 
@@ -1136,6 +1145,7 @@ window.onload = () => {
   loadTotalTransactions();
   startSavingsTips();
   renderCalendar();
+  loadRemainingBalance();
 };
 
 function renderCalendar() {
@@ -1166,3 +1176,4 @@ function renderCalendar() {
 
   document.getElementById("calDays").innerHTML = html;
 }
+

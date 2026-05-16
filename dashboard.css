@@ -8,7 +8,7 @@
   --light-green: #DDEB9D;
   --text-dark: #425133;
   --text-soft: #7c8d5b;
-  --card-bg: rgba(255,255,255,0.4);
+  --card-bg: rgba(255,255,255,0.3);
   --glass-border: rgba(160, 200, 120, 0.18);
   --danger: #e76f51;
   --shadow-soft: 0 10px 30px rgba(160,200,120,0.15);
@@ -149,7 +149,7 @@ body::before {
 
 /* OVERVIEW CARD */
 .overview-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
+  background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.3));
   backdrop-filter: blur(18px);
   padding: 55px;
   border-radius: 28px;
@@ -233,7 +233,7 @@ input:focus {
 /* GOAL CARDS */
 .goal-card,
 .progress-card {
-  background: rgba(255, 255, 255, 0.671);
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(15px);
   padding: 22px;
   border-radius: 22px;
@@ -325,7 +325,7 @@ input:focus {
   border-spacing: 0;
   overflow: hidden;
   border-radius: 24px;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.4);
   box-shadow: 0 8px 24px rgba(0,0,0,0.04);
 }
 
@@ -713,7 +713,7 @@ body.dark .hamburger {
 #home {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 20px;
   max-width: 100%;
 }
 
@@ -721,7 +721,7 @@ body.dark .hamburger {
 .greeting-card {
   padding: 40px 48px !important;
   max-width: 100% !important;
-  margin-bottom: 25px !important;
+  margin-bottom: 20px !important;
 }
 
 .greeting {
@@ -988,7 +988,7 @@ body.dark .hamburger {
 /* OVERVIEW HORIZONTAL ROW */
 .overview-row {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   align-items: stretch;
   flex-wrap: wrap;
 }
@@ -1711,4 +1711,45 @@ body.dark .hamburger {
 body.dark .greeting-calendar {
   background: transparent;
   border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* REMAINING SAVINGS CARD */
+.remaining-card {
+  width: 260px;
+  min-height: 260px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--card-bg);
+  border: 1px solid rgba(160, 200, 120, 0.14);
+  border-radius: 28px;
+  padding: 36px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.remaining-label {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--text-soft);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.remaining-amount {
+  font-size: 52px;
+  margin: 0;
+  color: #A0C878;
+  font-weight: 800;
+}
+
+.remaining-subtext {
+  margin-top: 10px;
+  color: var(--text-soft);
+  font-size: 15px;
+}
+
+/* Dark mode */
+body.dark .remaining-card {
+  background: rgba(30, 30, 30, 0.7);
 }
