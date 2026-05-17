@@ -985,7 +985,13 @@ window.showPanel = (panel) => {
 
 
 function logout() {
-  window.location.href = "index.html";
+  showConfirm(
+    "Logout",
+    "Are you sure you want to logout?",
+    () => {
+      window.location.href = "index.html";
+    }
+  );
 }
 
 

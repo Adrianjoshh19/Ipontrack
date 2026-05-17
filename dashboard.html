@@ -21,7 +21,7 @@
       <button onclick="showPanel('premium')">Premium</button>
 
       <button onclick="toggleDarkMode()" id="darkModeToggle" class="theme-toggle">🌙</button>
-      <button class="logout" onclick="logout()">Logout</button>
+      <button class="logout-icon" onclick="logout()" title="Logout">◀</button>
     </aside>
 
     <main class="main">
@@ -161,18 +161,61 @@
       </section>
 
       <!-- PREMIUM -->
-      <section id="premium" class="panel hidden">
-        <h1>Activate Premium</h1>
+<section id="premium" class="panel hidden">
+  <h1>Upgrade to Premium</h1>
+  <p style="color: var(--text-soft); margin-bottom: 30px;">Unlock powerful features to supercharge your savings journey.</p>
 
-        <input id="activation_code" placeholder="Enter activation code">
-        <button onclick="activate()">Activate</button>
+  <div class="pricing-table">
+    
+    <!-- FREE COLUMN -->
+    <div class="pricing-col">
+      <div class="pricing-header free">
+        <h2>Free</h2>
+        <p class="pricing-price">₱0</p>
+        <p class="pricing-sub">Forever</p>
+      </div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="check">✓</span> Basic Savings Tracking</div>
+        <div class="pricing-feature"><span class="check">✓</span> Up to 5 Goals</div>
+        <div class="pricing-feature"><span class="check">✓</span> Transaction History</div>
+        <div class="pricing-feature"><span class="check">✓</span> Savings Tips</div>
+        <div class="pricing-feature"><span class="check">✓</span> Dark Mode</div>
+        <div class="pricing-feature disabled"><span class="cross">✗</span> Advanced Analytics</div>
+        <div class="pricing-feature disabled"><span class="cross">✗</span> Smart Predictions</div>
+        <div class="pricing-feature disabled"><span class="cross">✗</span> Extended History</div>
+        <div class="pricing-feature disabled"><span class="cross">✗</span> Priority Insights</div>
+      </div>
+      <div class="pricing-footer">
+        <p class="current-plan">Current Plan</p>
+      </div>
+    </div>
 
-        <p id="premiumStatus">Free Account</p>
-      </section>
-
-    </main>
+    <!-- PREMIUM COLUMN -->
+    <div class="pricing-col featured">
+      <div class="pricing-badge">⭐ RECOMMENDED</div>
+      <div class="pricing-header premium">
+        <h2>Premium</h2>
+        <p class="pricing-price">₱299</p>
+        <p class="pricing-sub">One-time payment</p>
+      </div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="check">✓</span> Unlimited Goals</div>
+        <div class="pricing-feature"><span class="check">✓</span> Advanced Analytics</div>
+        <div class="pricing-feature"><span class="check">✓</span> Savings Tips</div>
+        <div class="pricing-feature"><span class="check">✓</span> Smart Predictions</div>
+        <div class="pricing-feature"><span class="check">✓</span> Extended History</div>
+        <div class="pricing-feature"><span class="check">✓</span> Priority Insights</div>
+        <div class="pricing-feature"><span class="check">✓</span> Data Export</div>
+      </div>
+      <div class="pricing-footer">
+        <input id="activation_code" placeholder="Enter activation code" style="margin-bottom: 10px;">
+        <button onclick="activate()">Activate Now</button>
+        <p id="premiumStatus" style="margin-top: 8px;"> </p>
+      </div>
+    </div>
 
   </div>
+</section>
 
   <!-- DEPOSIT MODAL -->
   <div id="depositModal" class="modal hidden">
