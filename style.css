@@ -65,6 +65,7 @@ body::before {
 
 /* Main Card */
 .container {
+  position: relative;
   width: 100%;
   max-width: 420px;
 
@@ -255,12 +256,16 @@ input:focus {
 /* DARK MODE (Login/Register) */
 /* ============================================= */
 body.dark {
-  background: #121212;
+  background: #313131;
 }
 
 body.dark::before {
   background: #2a2a2a;
   opacity: 0.25;
+}
+
+body.dark .container {
+  background: rgba(30, 30, 30, 0.8);
 }
 
 body.dark input {
@@ -284,3 +289,23 @@ body.dark .mini-card {
 body.dark .mini-card small {
   color: #aaa;
 }
+
+.theme-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: 0.3s ease;
+  line-height: 1;
+}
+
+.theme-toggle:hover {
+  background: rgba(160, 200, 120, 0.1);
+  transform: scale(1.1);
+}
+

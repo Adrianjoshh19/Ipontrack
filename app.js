@@ -95,11 +95,7 @@ window.toggleDarkMode = () => {
 function updateDarkModeButton() {
   const toggle = document.getElementById('darkModeToggle');
   if (!toggle) return;
-  if (document.body.classList.contains('dark')) {
-    toggle.textContent = '☀️ Light Mode';
-  } else {
-    toggle.textContent = '🌙 Dark Mode';
-  }
+  toggle.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
 }
 
 // Apply saved theme on page load

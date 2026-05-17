@@ -1672,3 +1672,20 @@ body.dark .remaining-card {
   font-weight: 800;
   cursor: pointer;
 }
+
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: 0.3s ease;
+  line-height: 1;
+  color: var(--text-soft);
+}
+
+.theme-toggle:hover {
+  background: rgba(160, 200, 120, 0.1);
+  transform: scale(1.1);
+}
