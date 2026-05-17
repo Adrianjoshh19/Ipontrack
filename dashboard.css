@@ -2193,3 +2193,49 @@ body.dark .analytics-card h2 {
 body.dark .donut-center {
   background: rgba(30, 30, 30, 0.9);
 }
+
+/* TOAST NOTIFICATIONS */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  padding: 14px 20px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-width: 260px;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.35s ease, fadeOut 0.35s ease 2.5s forwards;
+  backdrop-filter: blur(10px);
+}
+
+.toast.success {
+  background: rgba(80, 180, 100, 0.92);
+}
+
+.toast.error {
+  background: rgba(220, 80, 60, 0.92);
+}
+
+.toast.info {
+  background: rgba(60, 140, 220, 0.92);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}

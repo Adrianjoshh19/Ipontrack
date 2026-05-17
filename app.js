@@ -133,7 +133,7 @@ window.deposit = () => {
   const goalId = document.getElementById("depositGoalId").value;
 
   if (!amount) {
-    alert("Enter amount");
+    showToast("Enter an amount", 'error');
     return;
   }
 
@@ -148,7 +148,7 @@ window.deposit = () => {
       console.log("ALLOCATE:", data);
 
       if (data.trim() === "success") {
-        alert("Allocated from Remaining Savings!");
+        showToast("Allocated!");
         closeDeposit();
         document.getElementById("amount").value = "";
         loadSavings();
@@ -161,7 +161,7 @@ window.deposit = () => {
         loadRemainingBalance();
         loadActiveGoals();
       } else if (data.trim() === "insufficient") {
-        alert("Not enough Remaining Savings! Add to Total Savings first.");
+        showToast("Not enough Remaining!", 'error');
       } else {
         alert(data);
       }
@@ -175,7 +175,7 @@ window.addGoal = () => {
   const amount = document.getElementById("goalAmount").value;
 
   if (!name || !amount) {
-    alert("Fill all fields");
+    showToast("Fill all fields", 'error');
     return;
   }
 
@@ -190,7 +190,7 @@ window.addGoal = () => {
       console.log("ADD GOAL:", data);
 
       if (data.trim() === "success") {
-        alert("Goal added!");
+        showToast("Goal added!");
         loadGoals();
         loadActiveGoals(); // Refresh
       } else {
@@ -579,7 +579,7 @@ window.goalWithdraw = () => {
   const goalId = document.getElementById("withdrawGoalId").value;
 
   if (!amount) {
-    alert("Enter amount");
+    showToast("Enter an amount", 'error');
     return;
   }
 
@@ -592,7 +592,7 @@ window.goalWithdraw = () => {
     .then(res => res.text())
     .then(data => {
       if (data.trim() === "success") {
-        alert("Withdrawn from goal!");
+        showToast("Withdrawn from goal!");
         closeGoalWithdraw();
         loadSavings();
         loadGoals();
@@ -602,7 +602,7 @@ window.goalWithdraw = () => {
         loadActiveGoals();
         loadGoalProgress();
       } else if (data.trim() === "insufficient") {
-        alert("Not enough funds in this goal.");
+        showToast("Not enough funds!", 'error');
       } else {
         alert(data);
       }
@@ -1012,7 +1012,7 @@ window.generalDeposit = () => {
   const amount = document.getElementById("generalAmount").value;
 
   if (!amount) {
-    alert("Enter amount");
+    showToast("Enter an amount", 'error');
     return;
   }
 
@@ -1025,7 +1025,7 @@ window.generalDeposit = () => {
     .then(res => res.text())
     .then(data => {
       if (data.trim() === "success") {
-        alert("Savings added!");
+        showToast("Savings added!");
         closeGeneralDeposit();
         document.getElementById("generalAmount").value = "";
         loadSavings();
@@ -1156,6 +1156,21 @@ function loadSavings() {
     });
 }
 
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
 window.openWithdraw = () => {
   document.getElementById("withdrawModal").classList.remove("hidden");
   document.getElementById("withdrawAmount").value = "";
@@ -1169,7 +1184,7 @@ window.withdraw = () => {
   const amount = document.getElementById("withdrawAmount").value;
 
   if (!amount) {
-    alert("Enter amount");
+    showToast("Enter an amount", 'error');
     return;
   }
 
@@ -1182,7 +1197,7 @@ window.withdraw = () => {
     .then(res => res.text())
     .then(data => {
       if (data.trim() === "success") {
-        alert("Withdrawn!");
+        showToast("Withdrawn!");
         closeWithdraw();
         loadSavings();
         loadTotalTransactions();
