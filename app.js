@@ -43,18 +43,23 @@ function updateGreeting() {
   const greeting = document.getElementById('greetingMessage');
   if (!greeting) return;
 
-  const hour = new Date().getHours();
-  let message;
+  fetch("get_user.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(user => {
+      const name = user.display_name || "there";
+      const hour = new Date().getHours();
+      let message;
 
-  if (hour < 12) {
-    message = 'Good morning! ☀️';
-  } else if (hour < 17) {
-    message = 'Good afternoon! 🌤️';
-  } else {
-    message = 'Good evening! 🌙';
-  }
+      if (hour < 12) {
+        message = `Good morning, ${name}! ☀️`;
+      } else if (hour < 17) {
+        message = `Good afternoon, ${name}! 🌤️`;
+      } else {
+        message = `Good evening, ${name}! 🌙`;
+      }
 
-  greeting.textContent = message;
+      greeting.textContent = message;
+    });
 }
 
 // Animated counter
@@ -204,11 +209,12 @@ window.addGoal = () => {
 window.register = () => {
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
+  const display_name = document.getElementById("regDisplayName").value;
 
   fetch("register.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&display_name=${encodeURIComponent(display_name)}`
   })
     .then(res => res.text())
     .then(data => {
