@@ -5,7 +5,11 @@ $email = $_POST['email'];
 $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 $display_name = $_POST['display_name'] ?? explode('@', $email)[0];
 
-@$conn->query("ALTER TABLE users ADD COLUMN display_name VARCHAR(100) DEFAULT NULL AFTER email");
+
+$check = $conn->query("SHOW COLUMNS FROM users LIKE 'display_name'");
+if ($check->num_rows === 0) {
+    $conn->query("ALTER TABLE users ADD COLUMN display_name VARCHAR(100) DEFAULT NULL AFTER email");
+}
 
 $stmt = $conn->prepare("INSERT INTO users (email, password, display_name) VALUES (?, ?, ?)");
 $stmt->bind_param("sss", $email, $password, $display_name);
