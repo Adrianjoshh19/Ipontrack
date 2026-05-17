@@ -32,24 +32,16 @@
         <!-- Greeting Card -->
         <div class="overview-card greeting-card">
           <div class="greeting-row">
-
-            <!-- Left: Greeting -->
             <div class="greeting-left">
               <p id="greetingMessage" class="greeting">Hello!</p>
               <p class="greeting-sub">Let's grow your savings today</p>
             </div>
-
-            <!-- Right: Clock + Calendar -->
             <div class="greeting-right">
-
-              <!-- Clock -->
               <div class="greeting-clock">
                 <p class="clock-day" id="clockDay">Loading...</p>
                 <h2 class="clock-time" id="clockTime">--:--</h2>
                 <small class="clock-date" id="clockDate">Loading date...</small>
               </div>
-
-              <!-- Visual Calendar -->
               <div class="greeting-calendar" id="miniCalendar">
                 <div class="cal-header">
                   <span class="cal-month" id="calMonth">May</span>
@@ -60,14 +52,11 @@
                 </div>
                 <div class="cal-days" id="calDays"></div>
               </div>
-
             </div>
-
           </div>
         </div>
 
         <div class="overview-row">
-
           <div class="overview-card">
             <p class="label">Total Savings</p>
             <div class="savings-row">
@@ -78,25 +67,21 @@
               </div>
             </div>
           </div>
-
           <div class="remaining-card">
             <p class="remaining-label">REMAINING SAVINGS</p>
             <h2 class="remaining-amount" id="remainingBalance">₱0</h2>
             <small class="remaining-subtext">Available to allocate</small>
           </div>
-
           <div class="goals-card">
             <p class="goals-label">ACTIVE GOALS</p>
             <h2 class="goals-count" id="activeGoals">0</h2>
             <small class="goals-subtext">Goals currently tracked</small>
           </div>
-
           <div class="transactions-card">
             <p class="transactions-label">TOTAL TRANSACTIONS</p>
             <h2 class="transactions-total" id="totalTransactions">₱0</h2>
             <small class="transactions-subtext">Transactions recorded</small>
           </div>
-
         </div>
 
         <div class="tips-card">
@@ -107,10 +92,8 @@
               <h3 class="tips-title">Smart Money Habit</h3>
             </div>
           </div>
-
           <p class="tips-text" id="tipsText">Emergency fund first — aim for 3-6 months of expenses.</p>
           <div class="tip-dots" id="tipDots"></div>
-
           <div class="tips-footer">
             <span class="tips-badge">Financial Discipline</span>
           </div>
@@ -121,20 +104,17 @@
       <!-- GOALS -->
       <section id="goals" class="panel hidden">
         <h1>Your Goals</h1>
-
         <div class="form">
           <input id="goalName" placeholder="Goal name">
           <input id="goalAmount" type="number" placeholder="Target amount">
           <button onclick="addGoal()">Add Goal</button>
         </div>
-
         <div id="goalList"></div>
       </section>
 
       <!-- HISTORY -->
       <section id="history" class="panel hidden">
         <h1>Transaction History</h1>
-
         <table class="history-table">
           <thead>
             <tr>
@@ -151,71 +131,99 @@
       <section id="analytics" class="panel hidden">
         <h1>Savings Analytics</h1>
 
-        <p id="noAnalytics" style="color:#94a3b8; display:none;">No analytics yet</p>
+        <!-- Summary Cards -->
+        <div class="summary-row">
+          <div class="summary-card">
+            <p class="summary-label">TOTAL SAVINGS</p>
+            <h3 id="analyticsTotalSavings">₱0</h3>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">ALLOCATED</p>
+            <h3 id="analyticsAllocated">₱0</h3>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">REMAINING</p>
+            <h3 id="analyticsRemaining">₱0</h3>
+          </div>
+          <div class="summary-card">
+            <p class="summary-label">COMPLETED GOALS</p>
+            <h3 id="analyticsCompleted">0</h3>
+          </div>
+        </div>
 
-        <div id="analyticsList"></div>
+        <!-- Savings Trend -->
+        <div class="analytics-card">
+          <h2>Savings Trend</h2>
+          <p class="analytics-subtitle">Last 7 days</p>
+          <div class="bar-chart" id="savingsTrend"></div>
+        </div>
 
-        <h2 class="progress-title">Goal Progress</h2>
-
-        <div id="goalProgressList"></div>
+        <!-- Goal Breakdown -->
+        <div class="analytics-card">
+          <h2>Goal Breakdown</h2>
+          <p class="analytics-subtitle">How your savings are distributed</p>
+          <div class="donut-container" id="goalBreakdown">
+            <div class="donut-center">Goals</div>
+          </div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
       </section>
 
       <!-- PREMIUM -->
-<section id="premium" class="panel hidden">
-  <h1>Upgrade to Premium</h1>
-  <p style="color: var(--text-soft); margin-bottom: 30px;">Unlock powerful features to supercharge your savings journey.</p>
+      <section id="premium" class="panel hidden">
+        <h1>Upgrade to Premium</h1>
+        <p style="color: var(--text-soft); margin-bottom: 30px;">Unlock powerful features to supercharge your savings
+          journey.</p>
+        <div class="pricing-table">
+          <div class="pricing-col">
+            <div class="pricing-header free">
+              <h2>Free</h2>
+              <p class="pricing-price">₱0</p>
+              <p class="pricing-sub">Forever</p>
+            </div>
+            <div class="pricing-features">
+              <div class="pricing-feature"><span class="check">✓</span> Basic Savings Tracking</div>
+              <div class="pricing-feature"><span class="check">✓</span> Up to 5 Goals</div>
+              <div class="pricing-feature"><span class="check">✓</span> Transaction History</div>
+              <div class="pricing-feature"><span class="check">✓</span> Savings Tips</div>
+              <div class="pricing-feature"><span class="check">✓</span> Dark Mode</div>
+              <div class="pricing-feature disabled"><span class="cross">✗</span> Advanced Analytics</div>
+              <div class="pricing-feature disabled"><span class="cross">✗</span> Smart Predictions</div>
+              <div class="pricing-feature disabled"><span class="cross">✗</span> Extended History</div>
+              <div class="pricing-feature disabled"><span class="cross">✗</span> Priority Insights</div>
+            </div>
+            <div class="pricing-footer">
+              <p class="current-plan">Current Plan</p>
+            </div>
+          </div>
+          <div class="pricing-col featured">
+            <div class="pricing-badge">⭐ RECOMMENDED</div>
+            <div class="pricing-header premium">
+              <h2>Premium</h2>
+              <p class="pricing-price">₱299</p>
+              <p class="pricing-sub">One-time payment</p>
+            </div>
+            <div class="pricing-features">
+              <div class="pricing-feature"><span class="check">✓</span> Unlimited Goals</div>
+              <div class="pricing-feature"><span class="check">✓</span> Advanced Analytics</div>
+              <div class="pricing-feature"><span class="check">✓</span> Savings Tips</div>
+              <div class="pricing-feature"><span class="check">✓</span> Smart Predictions</div>
+              <div class="pricing-feature"><span class="check">✓</span> Extended History</div>
+              <div class="pricing-feature"><span class="check">✓</span> Priority Insights</div>
+              <div class="pricing-feature"><span class="check">✓</span> Data Export</div>
+            </div>
+            <div class="pricing-footer">
+              <input id="activation_code" placeholder="Enter activation code" style="margin-bottom: 10px;">
+              <button onclick="activate()">Activate Now</button>
+              <p id="premiumStatus" style="margin-top: 8px;"> </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-  <div class="pricing-table">
-    
-    <!-- FREE COLUMN -->
-    <div class="pricing-col">
-      <div class="pricing-header free">
-        <h2>Free</h2>
-        <p class="pricing-price">₱0</p>
-        <p class="pricing-sub">Forever</p>
-      </div>
-      <div class="pricing-features">
-        <div class="pricing-feature"><span class="check">✓</span> Basic Savings Tracking</div>
-        <div class="pricing-feature"><span class="check">✓</span> Up to 5 Goals</div>
-        <div class="pricing-feature"><span class="check">✓</span> Transaction History</div>
-        <div class="pricing-feature"><span class="check">✓</span> Savings Tips</div>
-        <div class="pricing-feature"><span class="check">✓</span> Dark Mode</div>
-        <div class="pricing-feature disabled"><span class="cross">✗</span> Advanced Analytics</div>
-        <div class="pricing-feature disabled"><span class="cross">✗</span> Smart Predictions</div>
-        <div class="pricing-feature disabled"><span class="cross">✗</span> Extended History</div>
-        <div class="pricing-feature disabled"><span class="cross">✗</span> Priority Insights</div>
-      </div>
-      <div class="pricing-footer">
-        <p class="current-plan">Current Plan</p>
-      </div>
-    </div>
-
-    <!-- PREMIUM COLUMN -->
-    <div class="pricing-col featured">
-      <div class="pricing-badge">⭐ RECOMMENDED</div>
-      <div class="pricing-header premium">
-        <h2>Premium</h2>
-        <p class="pricing-price">₱299</p>
-        <p class="pricing-sub">One-time payment</p>
-      </div>
-      <div class="pricing-features">
-        <div class="pricing-feature"><span class="check">✓</span> Unlimited Goals</div>
-        <div class="pricing-feature"><span class="check">✓</span> Advanced Analytics</div>
-        <div class="pricing-feature"><span class="check">✓</span> Savings Tips</div>
-        <div class="pricing-feature"><span class="check">✓</span> Smart Predictions</div>
-        <div class="pricing-feature"><span class="check">✓</span> Extended History</div>
-        <div class="pricing-feature"><span class="check">✓</span> Priority Insights</div>
-        <div class="pricing-feature"><span class="check">✓</span> Data Export</div>
-      </div>
-      <div class="pricing-footer">
-        <input id="activation_code" placeholder="Enter activation code" style="margin-bottom: 10px;">
-        <button onclick="activate()">Activate Now</button>
-        <p id="premiumStatus" style="margin-top: 8px;"> </p>
-      </div>
-    </div>
+    </main>
 
   </div>
-</section>
 
   <!-- DEPOSIT MODAL -->
   <div id="depositModal" class="modal hidden">
@@ -255,17 +263,17 @@
   </div>
 
   <!-- GOAL WITHDRAW MODAL -->
-<div id="goalWithdrawModal" class="modal hidden">
-  <div class="modal-box">
-    <h3>Withdraw from Goal</h3>
-    <input id="goalWithdrawAmount" type="number" placeholder="Enter amount">
-    <input type="hidden" id="withdrawGoalId">
-    <div class="modal-actions">
-      <button class="cancel-btn" onclick="closeGoalWithdraw()">Cancel</button>
-      <button class="save-btn" onclick="goalWithdraw()">Withdraw</button>
+  <div id="goalWithdrawModal" class="modal hidden">
+    <div class="modal-box">
+      <h3>Withdraw from Goal</h3>
+      <input id="goalWithdrawAmount" type="number" placeholder="Enter amount">
+      <input type="hidden" id="withdrawGoalId">
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closeGoalWithdraw()">Cancel</button>
+        <button class="save-btn" onclick="goalWithdraw()">Withdraw</button>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- CONFIRMATION MODAL -->
   <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true">

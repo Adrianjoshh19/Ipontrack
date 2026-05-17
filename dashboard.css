@@ -1911,3 +1911,285 @@ body.dark .pricing-header.premium {
   background: rgba(231, 111, 81, 0.1);
   color: var(--danger);
 }
+
+/* ============================================= */
+/* ANALYTICS */
+/* ============================================= */
+
+.analytics-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(160, 200, 120, 0.14);
+  border-radius: 22px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.analytics-card h2 {
+  margin: 0 0 4px 0;
+  font-size: 1.3rem;
+  color: var(--text-dark);
+  background: none;
+  -webkit-text-fill-color: var(--text-dark);
+}
+
+.analytics-subtitle {
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  margin: 0 0 24px 0;
+}
+
+/* Bar Chart */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  height: 220px;
+  padding: 0 4px;
+}
+
+.bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar {
+  width: 100%;
+  max-width: 50px;
+  background: var(--primary);
+  border-radius: 8px 8px 0 0;
+  min-height: 4px;
+  transition: height 0.6s ease;
+}
+
+.bar-label {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  margin-top: 8px;
+}
+
+.bar-amount {
+   font-size: 0.75rem;
+  color: var(--text-soft);
+  margin-bottom: 4px;
+}
+
+/* Donut Chart */
+.donut-container {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-center {
+  position: absolute;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: center;
+}
+
+.donut-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Dark mode */
+body.dark .analytics-card {
+  background: rgba(30, 30, 30, 0.7);
+}
+
+body.dark .analytics-card h2 {
+  -webkit-text-fill-color: var(--text-dark);
+}
+
+body.dark .bar {
+  background: var(--primary);
+}
+
+/* ============================================= */
+/* ANALYTICS */
+/* ============================================= */
+
+.analytics-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(160, 200, 120, 0.14);
+  border-radius: 22px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.analytics-card h2 {
+  margin: 0 0 4px 0;
+  font-size: 1.3rem;
+  color: var(--text-dark);
+  background: none;
+  -webkit-text-fill-color: var(--text-dark);
+}
+
+.analytics-subtitle {
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  margin: 0 0 24px 0;
+}
+
+/* Bar Chart */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 180px;
+  padding: 0 4px;
+}
+
+.bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar {
+  width: 100%;
+  max-width: 40px;
+  background: var(--primary);
+  border-radius: 8px 8px 0 0;
+  min-height: 4px;
+  transition: height 0.6s ease;
+}
+
+.bar-label {
+  font-size: 0.7rem;
+  color: var(--text-soft);
+  margin-top: 8px;
+}
+
+.bar-amount {
+  font-size: 0.65rem;
+  color: var(--text-soft);
+  margin-bottom: 4px;
+}
+
+/* Donut Chart */
+.donut-container {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-center {
+  position: absolute;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: center;
+  background: var(--card-bg);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Summary Cards */
+.summary-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 150px;
+  background: var(--card-bg);
+  border: 1px solid rgba(160, 200, 120, 0.14);
+  border-radius: 18px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.summary-label {
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  color: var(--text-soft);
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.summary-card h3 {
+  font-size: 1.6rem;
+  margin: 0;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+/* Dark mode */
+body.dark .analytics-card,
+body.dark .summary-card {
+  background: rgba(30, 30, 30, 0.7);
+}
+
+body.dark .analytics-card h2 {
+  -webkit-text-fill-color: var(--text-dark);
+}
+
+body.dark .donut-center {
+  background: rgba(30, 30, 30, 0.9);
+}

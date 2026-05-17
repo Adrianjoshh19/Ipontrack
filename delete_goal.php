@@ -21,6 +21,7 @@ if ($reason === 'refund') {
     // Move money back to General Savings
     $refund = $goalData['current_amount'];
     $conn->query("UPDATE goals SET current_amount = current_amount + $refund WHERE id = $generalGoalId");
+    $conn->query("INSERT INTO transactions (goal_id, user_id, amount) VALUES ($generalGoalId, $user_id, $refund)");
 } elseif ($reason === 'incomplete') {
     // Refund to Remaining
     if ($goalData['current_amount'] > 0) {

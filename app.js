@@ -589,25 +589,25 @@ window.goalWithdraw = () => {
     body: `amount=${encodeURIComponent(amount)}&goal_id=${encodeURIComponent(goalId)}`,
     credentials: "same-origin"
   })
-  .then(res => res.text())
-  .then(data => {
-    if (data.trim() === "success") {
-      alert("Withdrawn from goal!");
-      closeGoalWithdraw();
-      loadSavings();
-      loadGoals();
-      loadHistory();
-      loadTotalTransactions();
-      loadRemainingBalance();
-      loadActiveGoals();
-      loadGoalProgress();
-    } else if (data.trim() === "insufficient") {
-      alert("Not enough funds in this goal.");
-    } else {
-      alert(data);
-    }
-  })
-  .catch(err => console.error("Goal withdraw error:", err));
+    .then(res => res.text())
+    .then(data => {
+      if (data.trim() === "success") {
+        alert("Withdrawn from goal!");
+        closeGoalWithdraw();
+        loadSavings();
+        loadGoals();
+        loadHistory();
+        loadTotalTransactions();
+        loadRemainingBalance();
+        loadActiveGoals();
+        loadGoalProgress();
+      } else if (data.trim() === "insufficient") {
+        alert("Not enough funds in this goal.");
+      } else {
+        alert(data);
+      }
+    })
+    .catch(err => console.error("Goal withdraw error:", err));
 };
 
 window.executeGoalDelete = (id, reason) => {
@@ -954,7 +954,6 @@ function startSavingsTips() {
 }
 
 window.showPanel = (panel) => {
-  // Close mobile sidebar if open
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('sidebarOverlay');
   if (sidebar && overlay && sidebar.classList.contains('open')) {
@@ -962,27 +961,21 @@ window.showPanel = (panel) => {
     overlay.classList.remove('active');
   }
 
-  document
-    .querySelectorAll(".panel")
-    .forEach(p => p.classList.add("hidden"));
-
-  document
-    .getElementById(panel)
-    .classList.remove("hidden");
+  document.querySelectorAll(".panel").forEach(p => p.classList.add("hidden"));
+  document.getElementById(panel).classList.remove("hidden");
 
   if (panel === "analytics") {
-    loadAnalyticsPanel();
-    loadGoalProgress();
+    loadAnalyticsSummary();
+    loadSavingsTrend();
+    loadGoalBreakdown();
   }
 
-  // Refresh Home when switching back
   if (panel === "home") {
     updateGreeting();
     loadSavings();
     loadRemainingBalance();
   }
 };
-
 
 function logout() {
   showConfirm(
@@ -1045,6 +1038,114 @@ window.generalDeposit = () => {
     .catch(err => console.error("General deposit error:", err));
 };
 
+
+
+function loadSavingsTrend() {
+  fetch("get_savings_trend.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById("savingsTrend");
+      if (!container) return;
+
+      if (!data || data.length === 0) {
+        container.innerHTML = "<p style='color: var(--text-soft); text-align: center; padding: 40px;'>No savings data yet</p>";
+        return;
+      }
+
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const amounts = data.map(d => parseFloat(d.total));
+      const maxAmount = Math.max(...amounts.map(Math.abs), 1);
+
+      let html = "";
+      data.forEach(d => {
+        const date = new Date(d.date);
+        const day = days[date.getDay()];
+        const value = Math.max(0, parseFloat(d.total));
+        const height = (Math.abs(value) / maxAmount) * 180 + 8;
+        const color = value >= 0 ? "var(--primary)" : "var(--danger)";
+
+        html += `
+          <div class="bar-wrapper">
+            <span class="bar-amount">₱${value.toLocaleString()}</span>
+            <div class="bar" style="height: ${height}px; background: ${color};"></div>
+            <span class="bar-label">${day}</span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    })
+    .catch(err => console.error("Trend error:", err));
+}
+
+function loadGoalBreakdown() {
+  fetch("get_goals.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(data => {
+      const realGoals = data.filter(g => g.goal_name !== "General Savings");
+      const container = document.getElementById("goalBreakdown");
+      const legend = document.getElementById("donutLegend");
+      if (!container || !legend) return;
+
+      if (realGoals.length === 0) {
+        container.style.background = "conic-gradient(#e0e0e0 0% 100%)";
+        legend.innerHTML = "<p style='color: var(--text-soft);'>No goals yet</p>";
+        return;
+      }
+
+      const colors = ["#A0C878", "#4A90D9", "#ff6a6a", "#fd8d42", "#7B68EE", "#50C878", "#FF6B6B", "#45B7D1"];
+      const total = realGoals.reduce((sum, g) => sum + parseFloat(g.current_amount), 0) || 1;
+
+      let gradient = "conic-gradient(";
+      let cumulative = 0;
+
+      realGoals.forEach((g, i) => {
+        const percent = (parseFloat(g.current_amount) / total) * 100;
+        gradient += `${colors[i % colors.length]} ${cumulative}% ${cumulative + percent}%`;
+        if (i < realGoals.length - 1) gradient += ", ";
+        cumulative += percent;
+      });
+      gradient += ")";
+
+      container.style.background = gradient;
+
+      let legendHtml = "";
+      realGoals.forEach((g, i) => {
+        const percent = ((parseFloat(g.current_amount) / total) * 100).toFixed(1);
+        legendHtml += `
+          <div class="legend-item">
+            <div class="legend-dot" style="background: ${colors[i % colors.length]};"></div>
+            <span>${g.goal_name} (${percent}%)</span>
+          </div>
+        `;
+      });
+      legend.innerHTML = legendHtml;
+    })
+    .catch(err => console.error("Breakdown error:", err));
+}
+
+function loadAnalyticsSummary() {
+  fetch("get_total.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("analyticsTotalSavings").textContent = "₱" + parseFloat(data.total).toLocaleString();
+    });
+
+  fetch("get_remaining.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("analyticsAllocated").textContent = "₱" + parseFloat(data.allocated).toLocaleString();
+      document.getElementById("analyticsRemaining").textContent = "₱" + parseFloat(data.remaining).toLocaleString();
+    });
+
+  fetch("get_goals.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(data => {
+      const completed = data.filter(g => g.goal_name !== "General Savings" && parseFloat(g.current_amount) >= parseFloat(g.target_amount)).length;
+      document.getElementById("analyticsCompleted").textContent = completed;
+    });
+}
+
 function loadSavings() {
   fetch("get_total.php", { credentials: "same-origin" })
     .then(res => res.json())
@@ -1103,14 +1204,15 @@ window.onload = () => {
   loadGoals();
   loadHistory();
   loadAnalytics();
-  loadAnalyticsPanel();
-  loadGoalProgress();
   startClock();
   loadActiveGoals();
   loadTotalTransactions();
   startSavingsTips();
   renderCalendar();
   loadRemainingBalance();
+  loadAnalyticsSummary();
+  loadSavingsTrend();
+  loadGoalBreakdown();
 };
 
 function renderCalendar() {

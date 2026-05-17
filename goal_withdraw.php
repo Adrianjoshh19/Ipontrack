@@ -41,4 +41,3 @@ $conn->query("INSERT INTO transactions (goal_id, user_id, amount) VALUES ($gener
 $conn->query("INSERT INTO transactions (goal_id, user_id, amount) VALUES ($goal_id, $user_id, -$amount)");
 
 echo "success";
-?>
