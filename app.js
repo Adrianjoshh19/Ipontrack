@@ -981,6 +981,10 @@ window.showPanel = (panel) => {
     loadSavings();
     loadRemainingBalance();
   }
+
+  if (panel === "achievements") {
+    loadAchievements();
+}
 };
 
 function logout() {
@@ -1043,6 +1047,59 @@ window.generalDeposit = () => {
     })
     .catch(err => console.error("General deposit error:", err));
 };
+
+function loadAchievements() {
+  fetch("get_completed_goals.php", { credentials: "same-origin" })
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById("achievementsList");
+      if (!container) return;
+
+      if (!data.length) {
+        container.innerHTML = `<div class="achievements-empty"><div class="empty-icon">🏆</div><h3>No achievements yet</h3><p>Complete a savings goal to unlock your first achievement!</p></div>`;
+        return;
+      }
+
+      const icons = ["🎉", "🏆", "⭐", "💎", "🚀", "🔥"];
+      let html = "";
+
+      data.forEach((goal, i) => {
+        const date = new Date(goal.completed_date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+        html += `
+          <div class="achievement-card">
+            <div class="achievement-header">
+              <div class="achievement-icon">${icons[i % icons.length]}</div>
+              <div class="achievement-title">
+                <h3>${goal.goal_name}</h3>
+                <div class="achievement-date">Completed on ${date} • Target: ₱${parseFloat(goal.target_amount).toLocaleString()}</div>
+              </div>
+            </div>
+            <div class="achievement-stats">
+              <div class="achievement-stat">
+                <div class="stat-value">${goal.deposit_count || 0}</div>
+                <div class="stat-label">Deposits</div>
+              </div>
+              <div class="achievement-stat">
+                <div class="stat-value">₱${Math.round(goal.avg_deposit || 0).toLocaleString()}</div>
+                <div class="stat-label">Avg per Deposit</div>
+              </div>
+              <div class="achievement-stat">
+                <div class="stat-value">${goal.days_to_complete || "N/A"}</div>
+                <div class="stat-label">Days to Complete</div>
+              </div>
+              <div class="achievement-stat">
+                <div class="stat-value">${goal.consistency || 100}%</div>
+                <div class="stat-label">Consistency</div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    })
+    .catch(err => console.error("Achievements error:", err));
+}
 
 
 
@@ -1234,6 +1291,7 @@ window.onload = () => {
   loadAnalyticsSummary();
   loadSavingsTrend();
   loadGoalBreakdown();
+  loadAchievements();
 };
 
 function renderCalendar() {

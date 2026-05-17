@@ -20,6 +20,7 @@
       <button onclick="showPanel('goals')">Goals</button>
       <button onclick="showPanel('history')">History</button>
       <button onclick="showPanel('analytics')">Savings Analytics</button>
+      <button onclick="showPanel('achievements')">Achievements</button>
       <button onclick="showPanel('premium')">Premium</button>
 
       <button onclick="toggleDarkMode()" id="darkModeToggle" class="theme-toggle">🌙</button>
@@ -169,6 +170,14 @@
           </div>
           <div class="donut-legend" id="donutLegend"></div>
         </div>
+      </section>
+
+      <!-- ACHIEVEMENTS -->
+      <section id="achievements" class="panel hidden">
+        <h1>Achievements</h1>
+        <p style="color: var(--text-soft); margin-bottom: 24px;">Your completed goals and saving milestones</p>
+
+        <div id="achievementsList"></div>
       </section>
 
       <!-- PREMIUM -->
