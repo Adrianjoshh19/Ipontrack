@@ -376,7 +376,8 @@ function loadGoals() {
                 </select>
                 <button class="smart-calc-btn" onclick="event.stopPropagation(); calculateSmartPrediction(${g.id}, ${g.target_amount}, ${g.current_amount})">Calculate</button>
               </div>
-              <p class="smart-result" id="smartResult-${g.id}"></p>
+              <p class="smart-result-label">You'll reach this goal by</p>
+              <div class="smart-result-card" id="smartResult-${g.id}" style="display: none;"></div>
             </div>
           </div>
         `;
@@ -424,7 +425,7 @@ function calculateSmartPrediction(id, target, current) {
   const amount = parseFloat(document.getElementById(`smartAmount-${id}`).value);
   const unit = document.getElementById(`smartUnit-${id}`).value;
   const remaining = target - current;
-
+  
   if (!amount || amount <= 0 || remaining <= 0) {
     document.getElementById(`smartResult-${id}`).textContent = "Goal already reached or invalid amount";
     return;
@@ -443,7 +444,12 @@ function calculateSmartPrediction(id, target, current) {
   const dateStr = targetDate.toLocaleDateString('en-US', options);
   const weeks = Math.ceil(daysNeeded / 7);
 
-  document.getElementById(`smartResult-${id}`).innerHTML = `📅 You'll reach this goal by <strong>${dateStr}</strong> (about ${weeks} weeks)`;
+  const resultEl = document.getElementById(`smartResult-${id}`);
+  resultEl.innerHTML = `
+    <p class="smart-result-date">${dateStr}</p>
+    <p class="smart-result-weeks">About <strong>${weeks} weeks</strong></p>
+  `;
+  resultEl.style.display = 'block';
 }
 
 function loadAnalytics() {
