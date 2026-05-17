@@ -154,6 +154,17 @@ window.deposit = () => {
 
       if (data.trim() === "success") {
         showToast("Allocated!");
+
+         fetch("get_goals.php", { credentials: "same-origin" })
+      .then(res => res.json())
+      .then(goals => {
+        const goal = goals.find(g => g.id == goalId);
+        if (goal && parseFloat(goal.current_amount) >= parseFloat(goal.target_amount)) {
+          launchConfetti();
+          showToast("🎉 Goal completed! Congratulations!");
+        }
+      });
+      
         closeDeposit();
         document.getElementById("amount").value = "";
         loadSavings();
@@ -1101,7 +1112,28 @@ function loadAchievements() {
     .catch(err => console.error("Achievements error:", err));
 }
 
+function launchConfetti() {
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
 
+  const colors = ["#A0C878", "#4A90D9", "#F5A623", "#E76F51", "#7B68EE", "#50C878", "#FF6B6B", "#ff6a6a", "#fd8d42"];
+
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = Math.random() * 0.8 + 's';
+    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    piece.style.width = (Math.random() * 8 + 6) + 'px';
+    piece.style.height = (Math.random() * 8 + 6) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    container.appendChild(piece);
+  }
+
+  setTimeout(() => container.remove(), 3500);
+}
 
 function loadSavingsTrend() {
   fetch("get_savings_trend.php", { credentials: "same-origin" })
