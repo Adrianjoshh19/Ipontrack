@@ -72,7 +72,10 @@
             <p class="label">Total Savings</p>
             <div class="savings-row">
               <h1 id="totalSavings">₱0</h1>
-              <button onclick="openGeneralDeposit()" class="goal-add-btn">+ ADD SAVINGS</button>
+              <div class="savings-buttons">
+                <button onclick="openGeneralDeposit()" class="goal-add-btn">+ ADD SAVINGS</button>
+                <button onclick="openWithdraw()" class="goal-delete-btn">- WITHDRAW</button>
+              </div>
             </div>
           </div>
 
@@ -185,13 +188,38 @@
   </div>
 
   <!-- GENERAL DEPOSIT MODAL -->
-<div id="generalDepositModal" class="modal hidden">
+  <div id="generalDepositModal" class="modal hidden">
+    <div class="modal-box">
+      <h3>Add to Total Savings</h3>
+      <input id="generalAmount" type="number" placeholder="Enter amount">
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closeGeneralDeposit()">Cancel</button>
+        <button class="save-btn" onclick="generalDeposit()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WITHDRAW MODAL -->
+  <div id="withdrawModal" class="modal hidden">
+    <div class="modal-box">
+      <h3>Withdraw from Total Savings</h3>
+      <input id="withdrawAmount" type="number" placeholder="Enter amount">
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closeWithdraw()">Cancel</button>
+        <button class="save-btn" onclick="withdraw()" style="background: var(--danger);">Withdraw</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOAL WITHDRAW MODAL -->
+<div id="goalWithdrawModal" class="modal hidden">
   <div class="modal-box">
-    <h3>Add to Total Savings</h3>
-    <input id="generalAmount" type="number" placeholder="Enter amount">
+    <h3>Withdraw from Goal</h3>
+    <input id="goalWithdrawAmount" type="number" placeholder="Enter amount">
+    <input type="hidden" id="withdrawGoalId">
     <div class="modal-actions">
-      <button class="cancel-btn" onclick="closeGeneralDeposit()">Cancel</button>
-      <button class="save-btn" onclick="generalDeposit()">Save</button>
+      <button class="cancel-btn" onclick="closeGoalWithdraw()">Cancel</button>
+      <button class="save-btn" onclick="goalWithdraw()">Withdraw</button>
     </div>
   </div>
 </div>

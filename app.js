@@ -279,9 +279,10 @@ function loadGoals() {
             <div class="goal-top">
               <h3>${g.goal_name}</h3>
               <div class="goal-actions">
-                <button type="button" class="goal-add-btn" onclick="openDeposit(${g.id})">ADD SAVINGS</button>
-                <button type="button" class="goal-delete-btn" onclick="deleteGoal(${g.id})">DELETE GOAL</button>
-              </div>
+  <button type="button" class="goal-add-btn" onclick="openDeposit(${g.id})">ADD SAVINGS</button>
+  <button type="button" class="goal-withdraw-btn" onclick="openGoalWithdraw(${g.id})">WITHDRAW</button>
+  <button type="button" class="goal-delete-btn" onclick="deleteGoal(${g.id})">DELETE GOAL</button>
+</div>
             </div>
             <p>₱${g.current_amount} / ₱${g.target_amount}</p>
             <div class="progress-bar">
@@ -527,11 +528,11 @@ function deleteGoal(id) {
     .then(res => res.json())
     .then(goals => {
       const goal = goals.find(g => g.id == id);
-      
+
       if (!goal) return;
-      
+
       const isCompleted = parseFloat(goal.current_amount) >= parseFloat(goal.target_amount);
-      
+
       if (isCompleted) {
         // Completed goal
         document.getElementById('confirmTitle').textContent = 'Delete Completed Goal';
@@ -557,7 +558,7 @@ function showCompleteDeleteConfirm(id) {
   document.getElementById('confirmTitle').textContent = 'Delete Completed Goal';
   document.getElementById('confirmMessage').textContent = 'Why are you deleting this completed goal?';
   document.getElementById('confirmModal').classList.remove('hidden');
-  
+
   // Update modal buttons
   const actions = document.querySelector('#confirmModal .modal-actions');
   actions.innerHTML = `
@@ -567,27 +568,73 @@ function showCompleteDeleteConfirm(id) {
   `;
 }
 
+window.openGoalWithdraw = (goalId) => {
+  document.getElementById("goalWithdrawModal").classList.remove("hidden");
+  document.getElementById("withdrawGoalId").value = goalId;
+  document.getElementById("goalWithdrawAmount").value = "";
+};
+
+window.closeGoalWithdraw = () => {
+  document.getElementById("goalWithdrawModal").classList.add("hidden");
+};
+
+window.goalWithdraw = () => {
+  const amount = document.getElementById("goalWithdrawAmount").value;
+  const goalId = document.getElementById("withdrawGoalId").value;
+
+  if (!amount) {
+    alert("Enter amount");
+    return;
+  }
+
+  fetch("goal_withdraw.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `amount=${encodeURIComponent(amount)}&goal_id=${encodeURIComponent(goalId)}`,
+    credentials: "same-origin"
+  })
+  .then(res => res.text())
+  .then(data => {
+    if (data.trim() === "success") {
+      alert("Withdrawn from goal!");
+      closeGoalWithdraw();
+      loadSavings();
+      loadGoals();
+      loadHistory();
+      loadTotalTransactions();
+      loadRemainingBalance();
+      loadActiveGoals();
+      loadGoalProgress();
+    } else if (data.trim() === "insufficient") {
+      alert("Not enough funds in this goal.");
+    } else {
+      alert(data);
+    }
+  })
+  .catch(err => console.error("Goal withdraw error:", err));
+};
+
 window.executeGoalDelete = (id, reason) => {
   closeConfirm();
-  
+
   fetch("delete_goal.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `id=${encodeURIComponent(id)}&reason=${reason}`,
     credentials: "same-origin"
   })
-  .then(res => res.text())
-  .then(data => {
-    console.log("DELETE GOAL:", data);
-    loadGoals();
-    loadGoalProgress();
-    loadActiveGoals();
-    loadSavings();
-    loadRemainingBalance();
-    loadTotalTransactions();
-    loadHistory();
-  })
-  .catch(err => console.error("DELETE GOAL ERROR:", err));
+    .then(res => res.text())
+    .then(data => {
+      console.log("DELETE GOAL:", data);
+      loadGoals();
+      loadGoalProgress();
+      loadActiveGoals();
+      loadSavings();
+      loadRemainingBalance();
+      loadTotalTransactions();
+      loadHistory();
+    })
+    .catch(err => console.error("DELETE GOAL ERROR:", err));
 };
 
 function deleteTransaction(id) {
@@ -776,7 +823,14 @@ function loadRemainingBalance() {
   fetch("get_remaining.php", { credentials: "same-origin" })
     .then(res => res.json())
     .then(data => {
-      document.getElementById("remainingBalance").textContent = "₱" + parseFloat(data.remaining).toLocaleString();
+      const el = document.getElementById("remainingBalance");
+      const amount = parseFloat(data.remaining).toLocaleString();
+      el.textContent = "₱" + amount;
+
+      el.style.fontSize = "42px";
+      while (el.scrollWidth > el.clientWidth && parseInt(el.style.fontSize) > 14) {
+        el.style.fontSize = (parseInt(el.style.fontSize) - 1) + "px";
+      }
     })
     .catch(err => console.error("Remaining balance error:", err));
 }
@@ -998,6 +1052,44 @@ function loadSavings() {
       animateCounter(totalElement, target);
     });
 }
+
+window.openWithdraw = () => {
+  document.getElementById("withdrawModal").classList.remove("hidden");
+  document.getElementById("withdrawAmount").value = "";
+};
+
+window.closeWithdraw = () => {
+  document.getElementById("withdrawModal").classList.add("hidden");
+};
+
+window.withdraw = () => {
+  const amount = document.getElementById("withdrawAmount").value;
+
+  if (!amount) {
+    alert("Enter amount");
+    return;
+  }
+
+  fetch("withdraw.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `amount=${encodeURIComponent(amount)}`,
+    credentials: "same-origin"
+  })
+    .then(res => res.text())
+    .then(data => {
+      if (data.trim() === "success") {
+        alert("Withdrawn!");
+        closeWithdraw();
+        loadSavings();
+        loadTotalTransactions();
+        loadRemainingBalance();
+      } else {
+        alert(data);
+      }
+    })
+    .catch(err => console.error("Withdraw error:", err));
+};
 
 // navigation
 window.goRegister = () => window.location.href = "register.html";
