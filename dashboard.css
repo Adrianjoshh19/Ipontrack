@@ -2416,3 +2416,102 @@ body.dark .deadline-inputs select {
   color: #e0e0e0;
   border-color: rgba(255, 255, 255, 0.1);
 }
+
+/* GOAL DETAILS EXPAND */
+.goal-card {
+  cursor: pointer;
+}
+
+.goal-details-divider {
+  height: 1px;
+  background: rgba(160, 200, 120, 0.15);
+  margin: 16px 0;
+}
+
+.smart-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  letter-spacing: 1px;
+  margin: 14px 0 8px 0;
+}
+
+.smart-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.smart-inputs span {
+  font-size: 0.85rem;
+  color: var(--text-dark);
+}
+
+.smart-inputs input {
+  width: 90px;
+  margin-bottom: 0;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+
+.smart-inputs select {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.75);
+  color: var(--text-dark);
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.smart-calc-btn {
+  padding: 10px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.smart-result {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+body.dark .smart-inputs select {
+  background: rgba(40, 40, 40, 0.7);
+  color: #e0e0e0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.goal-details {
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  max-height: 0;
+  opacity: 0;
+}
+
+.goal-details.open {
+  max-height: 600px;
+  opacity: 1;
+}
+
+.goal-expand-icon {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  cursor: pointer;
+  padding: 8px 0 4px;
+  transition: transform 0.3s ease;
+}
+
+.goal-expand-icon:hover {
+  color: var(--primary);
+}

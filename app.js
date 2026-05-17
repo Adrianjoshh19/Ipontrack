@@ -318,43 +318,65 @@ function loadGoals() {
         const percent = ((g.current_amount / g.target_amount) * 100).toFixed(1);
 
         html += `
-          <div class="goal-card">
+          <div class="goal-card" onclick="toggleGoalDetails(${g.id}, event)">
             <div class="goal-top">
               <h3>${g.goal_name}</h3>
               <div class="goal-actions">
-  <button type="button" class="goal-add-btn" onclick="openDeposit(${g.id})">ADD SAVINGS</button>
-  <button type="button" class="goal-withdraw-btn" onclick="openGoalWithdraw(${g.id})">WITHDRAW</button>
-  <button type="button" class="goal-delete-btn" onclick="deleteGoal(${g.id})">DELETE GOAL</button>
-</div>
+                <button type="button" class="goal-add-btn" onclick="event.stopPropagation(); openDeposit(${g.id})">ADD SAVINGS</button>
+                <button type="button" class="goal-withdraw-btn" onclick="event.stopPropagation(); openGoalWithdraw(${g.id})">WITHDRAW</button>
+                <button type="button" class="goal-delete-btn" onclick="event.stopPropagation(); deleteGoal(${g.id})">DELETE GOAL</button>
+              </div>
             </div>
             <p>₱${g.current_amount} / ₱${g.target_amount}</p>
             <div class="progress-bar">
               <div class="progress-fill" style="width:${percent}%"></div>
             </div>
-            <select class="prediction-select" data-deadline="${g.deadline_num || ''}|${g.deadline_unit || ''}" onchange="updatePrediction(this, ${g.target_amount}, ${g.current_amount}, ${g.id})">
-              <option value="1">1 Week</option>
-              <option value="2">2 Weeks</option>
-              <option value="3">3 Weeks</option>
-              <option value="4">4 Weeks</option>
-              <option value="1m">1 Month</option>
-              <option value="2m">2 Months</option>
-              <option value="3m">3 Months</option>
-              <option value="6m">6 Months</option>
-              <option value="12m">12 Months</option>
-            </select>
-            <div class="goal-analytics">
-              <div class="mini-card">
-                <small>Daily</small>
-                <strong id="daily-${g.id}">₱0</strong>
+            <p class="goal-expand-hint" onclick="event.stopPropagation(); toggleGoalDetails(${g.id})">Click to expand ▼</p>
+
+            <!-- Expandable Details -->
+            <div class="goal-details" id="goalDetails-${g.id}" style="display: none;">
+              <div class="goal-details-divider"></div>
+              
+              <p class="smart-label">📋 Savings Plan</p>
+              <select class="prediction-select" data-deadline="${g.deadline_num || ''}|${g.deadline_unit || ''}" onchange="event.stopPropagation(); updatePrediction(this, ${g.target_amount}, ${g.current_amount}, ${g.id})">
+                <option value="1">1 Week</option>
+                <option value="2">2 Weeks</option>
+                <option value="3">3 Weeks</option>
+                <option value="4">4 Weeks</option>
+                <option value="1m">1 Month</option>
+                <option value="2m">2 Months</option>
+                <option value="3m">3 Months</option>
+                <option value="6m">6 Months</option>
+                <option value="12m">12 Months</option>
+              </select>
+
+              <div class="goal-analytics">
+                <div class="mini-card">
+                  <small>Daily</small>
+                  <strong id="daily-${g.id}">₱0</strong>
+                </div>
+                <div class="mini-card">
+                  <small>Weekly</small>
+                  <strong id="weekly-${g.id}">₱0</strong>
+                </div>
+                <div class="mini-card">
+                  <small>Monthly</small>
+                  <strong id="monthly-${g.id}">₱0</strong>
+                </div>
               </div>
-              <div class="mini-card">
-                <small>Weekly</small>
-                <strong id="weekly-${g.id}">₱0</strong>
+
+              <p class="smart-label">💡 Smart Prediction</p>
+              <div class="smart-inputs">
+                <span>I can save</span>
+                <input type="number" id="smartAmount-${g.id}" placeholder="Amount" min="1" value="500" onclick="event.stopPropagation()">
+                <select id="smartUnit-${g.id}" onclick="event.stopPropagation()">
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+                <button class="smart-calc-btn" onclick="event.stopPropagation(); calculateSmartPrediction(${g.id}, ${g.target_amount}, ${g.current_amount})">Calculate</button>
               </div>
-              <div class="mini-card">
-                <small>Monthly</small>
-                <strong id="monthly-${g.id}">₱0</strong>
-              </div>
+              <p class="smart-result" id="smartResult-${g.id}"></p>
             </div>
           </div>
         `;
@@ -364,22 +386,65 @@ function loadGoals() {
       loadGoalAnalytics();
 
       setTimeout(() => {
-  document.querySelectorAll(".prediction-select").forEach(select => {
-    const deadline = select.dataset.deadline;
-    if (deadline && deadline.includes('|')) {
-      const [num, unit] = deadline.split('|');
-      if (num && unit) {
-        const value = num + (unit === 'months' ? 'm' : '');
-        if (select.querySelector(`option[value="${value}"]`)) {
-          select.value = value;
-        }
-      }
-    }
-    select.dispatchEvent(new Event("change"));
-  });
-}, 100);
+        document.querySelectorAll(".prediction-select").forEach(select => {
+          const deadline = select.dataset.deadline;
+          if (deadline && deadline.includes('|')) {
+            const [num, unit] = deadline.split('|');
+            if (num && unit) {
+              const value = num + (unit === 'months' ? 'm' : '');
+              if (select.querySelector(`option[value="${value}"]`)) {
+                select.value = value;
+              }
+            }
+          }
+          select.dispatchEvent(new Event("change"));
+        });
+      }, 100);
     });
+}
+
+function toggleGoalDetails(id, event) {
+  if (event) {
+    const tag = event.target.tagName.toLowerCase();
+    if (tag === 'button' || tag === 'select' || tag === 'input' || tag === 'option') return;
   }
+  const details = document.getElementById(`goalDetails-${id}`);
+  if (!details) return;
+
+  if (details.classList.contains('open')) {
+    details.classList.remove('open');
+    setTimeout(() => { if (!details.classList.contains('open')) details.style.display = 'none'; }, 400);
+  } else {
+    details.style.display = 'block';
+    setTimeout(() => details.classList.add('open'), 10);
+  }
+}
+
+function calculateSmartPrediction(id, target, current) {
+  const amount = parseFloat(document.getElementById(`smartAmount-${id}`).value);
+  const unit = document.getElementById(`smartUnit-${id}`).value;
+  const remaining = target - current;
+
+  if (!amount || amount <= 0 || remaining <= 0) {
+    document.getElementById(`smartResult-${id}`).textContent = "Goal already reached or invalid amount";
+    return;
+  }
+
+  let daysNeeded;
+  if (unit === 'daily') daysNeeded = remaining / amount;
+  else if (unit === 'weekly') daysNeeded = remaining / (amount / 7);
+  else daysNeeded = remaining / (amount / 30.44);
+
+  const today = new Date();
+  const targetDate = new Date(today);
+  targetDate.setDate(today.getDate() + Math.ceil(daysNeeded));
+
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const dateStr = targetDate.toLocaleDateString('en-US', options);
+  const weeks = Math.ceil(daysNeeded / 7);
+
+  document.getElementById(`smartResult-${id}`).innerHTML = `📅 You'll reach this goal by <strong>${dateStr}</strong> (about ${weeks} weeks)`;
+}
 
 function loadAnalytics() {
 
