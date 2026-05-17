@@ -272,39 +272,27 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadHistory() {
-
-  fetch("get_transactions.php", {
-    credentials: "same-origin"
-  })
+  fetch("get_transactions.php", { credentials: "same-origin" })
     .then(res => res.json())
     .then(data => {
-
       let html = "";
 
       data.forEach(t => {
-
+        const type = parseFloat(t.amount) >= 0 ? 'Deposit' : 'Withdrawal';
         html += `
-        <tr>
-
-          <td>₱${t.amount}</td>
-
-          <td>${t.created_at}</td>
-
-          <td>
-            <button
-              class="delete-btn"
-              onclick="deleteTransaction(${t.id})"
-            >
-              Delete
-            </button>
-          </td>
-
-        </tr>
-      `;
+          <tr>
+            <td>${t.goal_name}</td>
+            <td>${type}</td>
+            <td>₱${parseFloat(t.amount).toLocaleString()}</td>
+            <td>${t.created_at}</td>
+            <td>
+              <button class="delete-btn" onclick="deleteTransaction(${t.id})">Delete</button>
+            </td>
+          </tr>
+        `;
       });
 
       document.getElementById("historyList").innerHTML = html;
-
     });
 }
 

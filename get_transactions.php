@@ -1,39 +1,32 @@
 <?php
-
 include "config.php";
 
 if (!isset($_SESSION['user_id'])) {
-
-    exit("Unauthorized");
-
+    echo json_encode([]);
+    exit;
 }
 
 $user_id = $_SESSION['user_id'];
 
-$stmt = $conn->prepare("
-SELECT
-    id,
-    amount,
-    created_at
-FROM transactions
-WHERE user_id = ?
-ORDER BY created_at DESC
-");
+$query = "
+SELECT t.id, t.amount, t.created_at, g.goal_name
+FROM transactions t
+LEFT JOIN goals g ON t.goal_id = g.id
+WHERE t.user_id = $user_id
+ORDER BY t.created_at DESC
+";
 
-$stmt->bind_param("i", $user_id);
-
-$stmt->execute();
-
-$result = $stmt->get_result();
+$res = $conn->query($query);
 
 $data = [];
-
-while ($row = $result->fetch_assoc()) {
-
-    $data[] = $row;
-
+while ($row = $res->fetch_assoc()) {
+    $data[] = [
+        "id" => $row['id'],
+        "amount" => $row['amount'],
+        "created_at" => $row['created_at'],
+        "goal_name" => $row['goal_name'] ?? "General Savings"
+    ];
 }
 
 echo json_encode($data);
-
 ?>
