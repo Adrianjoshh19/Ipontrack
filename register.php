@@ -7,6 +7,8 @@ $display_name = $_POST['display_name'] ?? explode('@', $email)[0];
 
 // Auto-create columns and tables if missing (first-time setup)
 @$conn->query("ALTER TABLE users ADD COLUMN display_name VARCHAR(100) DEFAULT NULL AFTER email");
+@$conn->query("ALTER TABLE goals ADD COLUMN deadline_num INT DEFAULT NULL AFTER target_amount");
+@$conn->query("ALTER TABLE goals ADD COLUMN deadline_unit VARCHAR(10) DEFAULT NULL AFTER deadline_num");
 @$conn->query("CREATE TABLE IF NOT EXISTS completed_goals (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,

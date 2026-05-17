@@ -15,30 +15,24 @@ $genRow = $genRes->fetch_assoc();
 $generalGoalId = $genRow['id'] ?? 0;
 
 $query = "
-SELECT 
-    DATE(created_at) as date,
-    SUM(amount) as total
+SELECT DATE(created_at) as date, SUM(amount) as total
 FROM transactions
-WHERE user_id = $user_id
-  AND goal_id = $generalGoalId
+WHERE user_id = $user_id AND goal_id = $generalGoalId
+  
   AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
 GROUP BY DATE(created_at)
-ORDER BY date ASC
 ";
 
 $res = $conn->query($query);
+$actual = [];
+while ($row = $res->fetch_assoc()) {
+    $actual[$row['date']] = $row['total'];
+}
 
 $data = [];
-$runningTotal = 0;
-
-
-
-while ($row = $res->fetch_assoc()) {
-    $runningTotal += $row['total'];
-    $data[] = [
-        "date" => $row['date'],
-        "total" => $runningTotal
-    ];
+for ($i = 6; $i >= 0; $i--) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+    $data[] = ["date" => $date, "total" => $actual[$date] ?? 0];
 }
 
 echo json_encode($data);

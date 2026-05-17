@@ -155,16 +155,16 @@ window.deposit = () => {
       if (data.trim() === "success") {
         showToast("Allocated!");
 
-         fetch("get_goals.php", { credentials: "same-origin" })
-      .then(res => res.json())
-      .then(goals => {
-        const goal = goals.find(g => g.id == goalId);
-        if (goal && parseFloat(goal.current_amount) >= parseFloat(goal.target_amount)) {
-          launchConfetti();
-          showToast("🎉 Goal completed! Congratulations!");
-        }
-      });
-      
+        fetch("get_goals.php", { credentials: "same-origin" })
+          .then(res => res.json())
+          .then(goals => {
+            const goal = goals.find(g => g.id == goalId);
+            if (goal && parseFloat(goal.current_amount) >= parseFloat(goal.target_amount)) {
+              launchConfetti();
+              showToast("🎉 Goal completed! Congratulations!");
+            }
+          });
+
         closeDeposit();
         document.getElementById("amount").value = "";
         loadSavings();
@@ -195,25 +195,40 @@ window.addGoal = () => {
     return;
   }
 
+  const deadlineNum = document.getElementById("goalDeadlineNum").value;
+  const deadlineUnit = document.getElementById("goalDeadlineUnit").value;
+
   fetch("add_goal.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}`,
+    body: `name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}&deadline_num=${deadlineNum}&deadline_unit=${deadlineUnit}`,
     credentials: "same-origin"
   })
     .then(res => res.text())
     .then(data => {
-      console.log("ADD GOAL:", data);
-
       if (data.trim() === "success") {
         showToast("Goal added!");
+        closeAddGoal();
         loadGoals();
-        loadActiveGoals(); // Refresh
+        loadActiveGoals();
       } else {
         alert(data);
       }
     })
     .catch(err => console.error("Error:", err));
+};
+
+window.openAddGoal = () => {
+  document.getElementById("addGoalModal").classList.remove("hidden");
+  document.getElementById("goalName").value = "";
+  document.getElementById("goalAmount").value = "";
+  document.getElementById("goalDeadlineNum").value = "1";
+  document.getElementById("goalDeadlineUnit").value = "weeks";
+  updateDeadlinePreview();
+};
+
+window.closeAddGoal = () => {
+  document.getElementById("addGoalModal").classList.add("hidden");
 };
 
 
@@ -240,6 +255,21 @@ window.register = () => {
     })
     .catch(err => console.error("Register error:", err));
 };
+
+function updateDeadlinePreview() {
+  const num = parseInt(document.getElementById("goalDeadlineNum").value) || 1;
+  const unit = document.getElementById("goalDeadlineUnit").value;
+  const preview = document.getElementById("deadlinePreview");
+  const unitText = num === 1 ? unit.slice(0, -1) : unit;
+  preview.textContent = `Target: ${num} ${unitText} from now`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const numInput = document.getElementById("goalDeadlineNum");
+  const unitSelect = document.getElementById("goalDeadlineUnit");
+  if (numInput) numInput.addEventListener('input', updateDeadlinePreview);
+  if (unitSelect) unitSelect.addEventListener('change', updateDeadlinePreview);
+});
 
 function loadHistory() {
 
@@ -301,7 +331,7 @@ function loadGoals() {
             <div class="progress-bar">
               <div class="progress-fill" style="width:${percent}%"></div>
             </div>
-            <select class="prediction-select" onchange="updatePrediction(this, ${g.target_amount}, ${g.current_amount}, ${g.id})">
+            <select class="prediction-select" data-deadline="${g.deadline_num || ''}|${g.deadline_unit || ''}" onchange="updatePrediction(this, ${g.target_amount}, ${g.current_amount}, ${g.id})">
               <option value="1">1 Week</option>
               <option value="2">2 Weeks</option>
               <option value="3">3 Weeks</option>
@@ -334,12 +364,22 @@ function loadGoals() {
       loadGoalAnalytics();
 
       setTimeout(() => {
-        document.querySelectorAll(".prediction-select").forEach(select => {
-          select.dispatchEvent(new Event("change"));
-        });
-      }, 100);
+  document.querySelectorAll(".prediction-select").forEach(select => {
+    const deadline = select.dataset.deadline;
+    if (deadline && deadline.includes('|')) {
+      const [num, unit] = deadline.split('|');
+      if (num && unit) {
+        const value = num + (unit === 'months' ? 'm' : '');
+        if (select.querySelector(`option[value="${value}"]`)) {
+          select.value = value;
+        }
+      }
+    }
+    select.dispatchEvent(new Event("change"));
+  });
+}, 100);
     });
-}
+  }
 
 function loadAnalytics() {
 
@@ -995,7 +1035,7 @@ window.showPanel = (panel) => {
 
   if (panel === "achievements") {
     loadAchievements();
-}
+  }
 };
 
 function logout() {
@@ -1233,11 +1273,16 @@ function loadAnalyticsSummary() {
       document.getElementById("analyticsRemaining").textContent = "₱" + parseFloat(data.remaining).toLocaleString();
     });
 
-  fetch("get_goals.php", { credentials: "same-origin" })
+  fetch("get_completed_goals.php", { credentials: "same-origin" })
     .then(res => res.json())
-    .then(data => {
-      const completed = data.filter(g => g.goal_name !== "General Savings" && parseFloat(g.current_amount) >= parseFloat(g.target_amount)).length;
-      document.getElementById("analyticsCompleted").textContent = completed;
+    .then(completedData => {
+      fetch("get_goals.php", { credentials: "same-origin" })
+        .then(res => res.json())
+        .then(goalsData => {
+          const activeCompleted = goalsData.filter(g => g.goal_name !== "General Savings" && parseFloat(g.current_amount) >= parseFloat(g.target_amount)).length;
+          const totalCompleted = activeCompleted + completedData.length;
+          document.getElementById("analyticsCompleted").textContent = totalCompleted;
+        });
     });
 }
 

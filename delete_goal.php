@@ -17,7 +17,7 @@ $goalRes = $conn->query("SELECT current_amount, target_amount, goal_name FROM go
 $goalData = $goalRes->fetch_assoc();
 
 // Save completed goal before deleting
-if ($goalData['current_amount'] >= $goalData['target_amount'] && $goalData['target_amount'] > 0) {
+if ($reason !== 'refund' && $goalData['current_amount'] >= $goalData['target_amount'] && $goalData['target_amount'] > 0) {
     $goalName = $conn->real_escape_string($goalData['goal_name']);
     $target = $goalData['target_amount'];
     

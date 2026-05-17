@@ -106,12 +106,11 @@
 
       <!-- GOALS -->
       <section id="goals" class="panel hidden">
-        <h1>Your Goals</h1>
-        <div class="form">
-          <input id="goalName" placeholder="Goal name">
-          <input id="goalAmount" type="number" placeholder="Target amount">
-          <button onclick="addGoal()">Add Goal</button>
+        <div class="goals-header">
+          <h1>Your Goals</h1>
+          <button onclick="openAddGoal()" class="primary-btn">+ Add Goal</button>
         </div>
+
         <div id="goalList"></div>
       </section>
 
@@ -295,6 +294,30 @@
       <div class="modal-actions">
         <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
         <button class="save-btn" onclick="executeConfirm()" style="background: var(--danger);">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD GOAL MODAL -->
+  <div id="addGoalModal" class="modal hidden">
+    <div class="modal-box">
+      <h3>Create New Goal</h3>
+      <input id="goalName" type="text" placeholder="What are you saving for?">
+      <input id="goalAmount" type="number" placeholder="How much does it cost? (₱)">
+      <div class="goal-deadline">
+        <label>When do you want to reach it?</label>
+        <div class="deadline-inputs">
+          <input id="goalDeadlineNum" type="number" placeholder="Number" min="1" value="1">
+          <select id="goalDeadlineUnit">
+            <option value="weeks">Weeks</option>
+            <option value="months">Months</option>
+          </select>
+        </div>
+        <p class="deadline-preview" id="deadlinePreview">Target: 1 week from now</p>
+      </div>
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closeAddGoal()">Cancel</button>
+        <button class="save-btn" onclick="addGoal()">Create Goal</button>
       </div>
     </div>
   </div>
