@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
 :root {
-  --bg-main: #FFFDF6;
+  --bg-main: rgb(107, 107, 107);
   --bg-soft: #FAF6E9;
   --primary: #A0C878;
   --primary-hover: #8bb364;
   --light-green: #DDEB9D;
   --text-dark: #425133;
   --text-soft: #7c8d5b;
-  --card-bg: rgba(255,255,255,0.3);
+  --card-bg: rgb(236, 236, 236);
   --glass-border: rgba(160, 200, 120, 0.18);
   --danger: #e76f51;
   --shadow-soft: 0 10px 30px rgba(160,200,120,0.15);
@@ -85,7 +85,7 @@ body::before {
 /* SIDEBAR */
 .sidebar {
   width: var(--sidebar-width);
-  background: rgba(255,255,255,0.55);
+  background: var(--card-bg);
   backdrop-filter: blur(20px);
   padding: 40px 20px;
   display: flex;
@@ -149,7 +149,7 @@ body::before {
 
 /* OVERVIEW CARD */
 .overview-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.3));
+   background: var(--card-bg);
   backdrop-filter: blur(18px);
   padding: 55px;
   border-radius: 28px;
@@ -732,6 +732,7 @@ body.dark .greeting-calendar {
   padding: 40px 48px !important;
   max-width: 100% !important;
   margin-bottom: 20px !important;
+   background: var(--card-bg) !important;
 }
 
 .greeting {
