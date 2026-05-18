@@ -1,331 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+include "config.php";
 
-<head>
-  <meta charset="UTF-8">
-  <title>IponTrack Dashboard</title>
-  <link rel="stylesheet" href="dashboard.css">
-</head>
+$email = $_POST['email'];
+$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+$display_name = $_POST['display_name'] ?? explode('@', $email)[0];
 
-<body>
+// Safe column/table creation – only adds if missing
+$conn->query("CREATE TABLE IF NOT EXISTS completed_goals (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    goal_name VARCHAR(255) NOT NULL,
+    target_amount DECIMAL(10,2) NOT NULL,
+    deposit_count INT DEFAULT 0,
+    avg_deposit DECIMAL(10,2) DEFAULT 0,
+    days_to_complete INT DEFAULT 0,
+    consistency INT DEFAULT 0,
+    completed_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)");
 
-  <div class="toast-container" id="toastContainer"></div>
+// Check for display_name column
+$colCheck = $conn->query("SHOW COLUMNS FROM users LIKE 'display_name'");
+if ($colCheck->num_rows == 0) {
+    $conn->query("ALTER TABLE users ADD COLUMN display_name VARCHAR(100) DEFAULT NULL AFTER email");
+}
 
-  <div class="layout">
+// Check for deadline columns
+$colCheck = $conn->query("SHOW COLUMNS FROM goals LIKE 'deadline_num'");
+if ($colCheck->num_rows == 0) {
+    $conn->query("ALTER TABLE goals ADD COLUMN deadline_num INT DEFAULT NULL AFTER target_amount");
+}
+$colCheck = $conn->query("SHOW COLUMNS FROM goals LIKE 'deadline_unit'");
+if ($colCheck->num_rows == 0) {
+    $conn->query("ALTER TABLE goals ADD COLUMN deadline_unit VARCHAR(10) DEFAULT NULL AFTER deadline_num");
+}
 
-    <aside class="sidebar">
-      <h2 class="logo">IponTrack</h2>
+// Insert user
+$stmt = $conn->prepare("INSERT INTO users (email, password, display_name) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $email, $password, $display_name);
 
-      <button onclick="showPanel('home')">Home</button>
-      <button onclick="showPanel('goals')">Goals</button>
-      <button onclick="showPanel('history')">History</button>
-      <button onclick="showPanel('analytics')">Savings Analytics</button>
-      <button onclick="showPanel('achievements')">Achievements</button>
-      <button onclick="showPanel('premium')">Premium</button>
-
-      <button onclick="toggleDarkMode()" id="darkModeToggle" class="theme-toggle">🌙</button>
-      <button class="logout-icon" onclick="logout()" title="Logout">◀</button>
-    </aside>
-
-    <main class="main">
-
-      <!-- HOME -->
-      <section id="home" class="panel">
-
-        <!-- Greeting Card -->
-        <div class="overview-card greeting-card">
-          <div class="greeting-row">
-            <div class="greeting-left">
-              <p id="greetingMessage" class="greeting">Hello!</p>
-              <p class="greeting-sub">Let's grow your savings today</p>
-            </div>
-            <div class="greeting-right">
-              <div class="greeting-clock">
-                <p class="clock-day" id="clockDay">Loading...</p>
-                <h2 class="clock-time" id="clockTime">--:--</h2>
-                <small class="clock-date" id="clockDate">Loading date...</small>
-              </div>
-              <div class="greeting-calendar" id="miniCalendar">
-                <div class="cal-header">
-                  <span class="cal-month" id="calMonth">May</span>
-                  <span class="cal-year" id="calYear">2026</span>
-                </div>
-                <div class="cal-weekdays">
-                  <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-                </div>
-                <div class="cal-days" id="calDays"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="overview-row">
-          <div class="overview-card">
-            <p class="label">Total Savings</p>
-            <div class="savings-row">
-              <h1 id="totalSavings">₱0</h1>
-              <div class="savings-buttons">
-                <button onclick="openGeneralDeposit()" class="goal-add-btn">+ ADD SAVINGS</button>
-                <button onclick="openWithdraw()" class="goal-delete-btn">- WITHDRAW</button>
-              </div>
-            </div>
-          </div>
-          <div class="remaining-card">
-            <p class="remaining-label">REMAINING SAVINGS</p>
-            <h2 class="remaining-amount" id="remainingBalance">₱0</h2>
-            <small class="remaining-subtext">Available to allocate</small>
-          </div>
-          <div class="goals-card">
-            <p class="goals-label">ACTIVE GOALS</p>
-            <h2 class="goals-count" id="activeGoals">0</h2>
-            <small class="goals-subtext">Goals currently tracked</small>
-          </div>
-          <div class="transactions-card">
-            <p class="transactions-label">TOTAL TRANSACTIONS</p>
-            <h2 class="transactions-total" id="totalTransactions">₱0</h2>
-            <small class="transactions-subtext">Transactions recorded</small>
-          </div>
-        </div>
-
-        <div class="tips-card">
-          <div class="tips-header">
-            <div class="tips-icon">💡</div>
-            <div>
-              <p class="tips-label">SAVING TIPS</p>
-              <h3 class="tips-title">Smart Money Habit</h3>
-            </div>
-          </div>
-          <p class="tips-text" id="tipsText">Emergency fund first — aim for 3-6 months of expenses.</p>
-          <div class="tip-dots" id="tipDots"></div>
-          <div class="tips-footer">
-            <span class="tips-badge">Financial Discipline</span>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- GOALS -->
-      <section id="goals" class="panel hidden">
-        <div class="goals-header">
-          <h1>Your Goals</h1>
-          <button onclick="openAddGoal()" class="primary-btn">+ Add Goal</button>
-        </div>
-
-        <div id="goalList"></div>
-      </section>
-
-      <!-- HISTORY --> 
-      <section id="history" class="panel hidden">
-        <h1>Transaction History</h1>
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Goal</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="historyList"></tbody>
-        </table>
-      </section>
-
-      <!-- ANALYTICS -->
-      <section id="analytics" class="panel hidden">
-        <h1>Savings Analytics</h1>
-
-        <!-- Summary Cards -->
-        <div class="summary-row">
-          <div class="summary-card">
-            <p class="summary-label">TOTAL SAVINGS</p>
-            <h3 id="analyticsTotalSavings">₱0</h3>
-          </div>
-          <div class="summary-card">
-            <p class="summary-label">ALLOCATED</p>
-            <h3 id="analyticsAllocated">₱0</h3>
-          </div>
-          <div class="summary-card">
-            <p class="summary-label">REMAINING</p>
-            <h3 id="analyticsRemaining">₱0</h3>
-          </div>
-          <div class="summary-card">
-            <p class="summary-label">COMPLETED GOALS</p>
-            <h3 id="analyticsCompleted">0</h3>
-          </div>
-        </div>
-
-        <!-- Savings Trend -->
-        <div class="analytics-card">
-          <h2>Savings Trend</h2>
-          <p class="analytics-subtitle">Last 7 days</p>
-          <div class="bar-chart" id="savingsTrend"></div>
-        </div>
-
-        <!-- Goal Breakdown -->
-        <div class="analytics-card">
-          <h2>Goals Breakdown</h2>
-          <p class="analytics-subtitle">How your savings are distributed</p>
-          <div class="donut-container" id="goalBreakdown">
-            <div class="donut-center">Goals</div>
-          </div>
-          <div class="donut-legend" id="donutLegend"></div>
-        </div>
-      </section>
-
-      <!-- ACHIEVEMENTS -->
-      <section id="achievements" class="panel hidden">
-        <h1>Achievements</h1>
-        <p style="color: var(--text-soft); margin-bottom: 24px;">Your completed goals and saving milestones</p>
-
-        <div id="achievementsList"></div>
-      </section>
-
-      <!-- PREMIUM -->
-      <section id="premium" class="panel hidden">
-        <h1>Upgrade to Premium</h1>
-        <p style="color: var(--text-soft); margin-bottom: 30px;">Unlock powerful features to supercharge your savings
-          journey.</p>
-        <div class="pricing-table">
-          <div class="pricing-col">
-            <div class="pricing-header free">
-              <h2>Free</h2>
-              <p class="pricing-price">₱0</p>
-              <p class="pricing-sub">Forever</p>
-            </div>
-            <div class="pricing-features">
-              <div class="pricing-feature"><span class="check">✓</span> Basic Savings Tracking</div>
-              <div class="pricing-feature"><span class="check">✓</span> Up to 5 Goals</div>
-              <div class="pricing-feature"><span class="check">✓</span> Transaction History</div>
-              <div class="pricing-feature"><span class="check">✓</span> Savings Tips</div>
-              <div class="pricing-feature"><span class="check">✓</span> Dark Mode</div>
-              <div class="pricing-feature disabled"><span class="cross">✗</span> Advanced Analytics</div>
-              <div class="pricing-feature disabled"><span class="cross">✗</span> Smart Predictions</div>
-              <div class="pricing-feature disabled"><span class="cross">✗</span> Extended History</div>
-              <div class="pricing-feature disabled"><span class="cross">✗</span> Priority Insights</div>
-            </div>
-            <div class="pricing-footer">
-              <p class="current-plan">Current Plan</p>
-            </div>
-          </div>
-          <div class="pricing-col featured">
-            <div class="pricing-badge">⭐ RECOMMENDED</div>
-            <div class="pricing-header premium">
-              <h2>Premium</h2>
-              <p class="pricing-price">₱299</p>
-              <p class="pricing-sub">One-time payment</p>
-            </div>
-            <div class="pricing-features">
-              <div class="pricing-feature"><span class="check">✓</span> Unlimited Goals</div>
-              <div class="pricing-feature"><span class="check">✓</span> Advanced Analytics</div>
-              <div class="pricing-feature"><span class="check">✓</span> Savings Tips</div>
-              <div class="pricing-feature"><span class="check">✓</span> Smart Predictions</div>
-              <div class="pricing-feature"><span class="check">✓</span> Extended History</div>
-              <div class="pricing-feature"><span class="check">✓</span> Priority Insights</div>
-              <div class="pricing-feature"><span class="check">✓</span> Data Export</div>
-            </div>
-            <div class="pricing-footer">
-              <input id="activation_code" placeholder="Enter activation code" style="margin-bottom: 10px;">
-              <button onclick="activate()">Activate Now</button>
-              <p id="premiumStatus" style="margin-top: 8px;"> </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </main>
-
-  </div>
-
-  <!-- DEPOSIT MODAL -->
-  <div id="depositModal" class="modal hidden">
-    <div class="modal-box">
-      <h3>Add Savings</h3>
-      <input id="amount" type="number" placeholder="Enter amount">
-      <input type="hidden" id="depositGoalId">
-      <div class="modal-actions">
-        <button class="cancel-btn" onclick="closeDeposit()">Cancel</button>
-        <button class="save-btn" onclick="deposit()">Save Savings</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- GENERAL DEPOSIT MODAL -->
-  <div id="generalDepositModal" class="modal hidden">
-    <div class="modal-box">
-      <h3>Add to Total Savings</h3>
-      <input id="generalAmount" type="number" placeholder="Enter amount">
-      <div class="modal-actions">
-        <button class="cancel-btn" onclick="closeGeneralDeposit()">Cancel</button>
-        <button class="save-btn" onclick="generalDeposit()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- WITHDRAW MODAL -->
-  <div id="withdrawModal" class="modal hidden">
-    <div class="modal-box">
-      <h3>Withdraw from Total Savings</h3>
-      <input id="withdrawAmount" type="number" placeholder="Enter amount">
-      <div class="modal-actions">
-        <button class="cancel-btn" onclick="closeWithdraw()">Cancel</button>
-        <button class="save-btn" onclick="withdraw()" style="background: var(--danger);">Withdraw</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- GOAL WITHDRAW MODAL -->
-  <div id="goalWithdrawModal" class="modal hidden">
-    <div class="modal-box">
-      <h3>Withdraw from Goal</h3>
-      <input id="goalWithdrawAmount" type="number" placeholder="Enter amount">
-      <input type="hidden" id="withdrawGoalId">
-      <div class="modal-actions">
-        <button class="cancel-btn" onclick="closeGoalWithdraw()">Cancel</button>
-        <button class="save-btn" onclick="goalWithdraw()">Withdraw</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONFIRMATION MODAL -->
-  <div id="confirmModal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modal-box confirm-box">
-      <div class="confirm-icon">⚠️</div>
-      <h3 id="confirmTitle">Are you sure?</h3>
-      <p id="confirmMessage">This action cannot be undone.</p>
-      <div class="modal-actions">
-        <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
-        <button class="save-btn" onclick="executeConfirm()" style="background: var(--danger);">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADD GOAL MODAL -->
-  <div id="addGoalModal" class="modal hidden">
-    <div class="modal-box">
-      <h3>Create New Goal</h3>
-      <input id="goalName" type="text" placeholder="What are you saving for?">
-      <input id="goalAmount" type="number" placeholder="How much does it cost? (₱)">
-      <div class="goal-deadline">
-        <label>When do you want to reach it?</label>
-        <div class="deadline-inputs">
-          <input id="goalDeadlineNum" type="number" placeholder="Number" min="1" value="1">
-          <select id="goalDeadlineUnit">
-            <option value="weeks">Weeks</option>
-            <option value="months">Months</option>
-          </select>
-        </div>
-        <p class="deadline-preview" id="deadlinePreview">Target: 1 week from now</p>
-      </div>
-      <div class="modal-actions">
-        <button class="cancel-btn" onclick="closeAddGoal()">Cancel</button>
-        <button class="save-btn" onclick="addGoal()">Create Goal</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
-
-</body>
-
-</html>
+if ($stmt->execute()) {
+    $user_id = $conn->insert_id;
+    $conn->query("INSERT INTO goals (user_id, goal_name, target_amount, current_amount) VALUES ($user_id, 'General Savings', 999999999, 0)");
+    echo "success";
+} else {
+    echo "error";
+}
+?>
