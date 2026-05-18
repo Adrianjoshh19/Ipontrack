@@ -1151,6 +1151,7 @@ window.generalDeposit = () => {
         loadSavings();
         loadTotalTransactions();
         loadRemainingBalance();
+        loadHistory();
       } else {
         alert(data);
       }
@@ -1401,6 +1402,7 @@ window.withdraw = () => {
         loadSavings();
         loadTotalTransactions();
         loadRemainingBalance();
+        loadHistory();
       } else {
         alert(data);
       }
